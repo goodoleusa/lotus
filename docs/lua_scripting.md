@@ -1,15 +1,23 @@
 ## Lotus Scripting Documentation
 
-- [Starting 101](#Starting-Point)
+- [Starting 101](#starting-point)
+- [Utility Classes](#utility-classes)
+  - [Str - String Utilities](#str---string-utilities)
+  - [Json - JSON Handling](#json---json-handling)
+  - [Html - HTML/CSS Selectors](#html---htmlcss-selectors)
+  - [Regex - Pattern Matching](#regex---pattern-matching)
 - [Url Parsing](#url-parsing)
-- [Change the global request options](#Change the global request options)
+  - [URL Helper Methods](#url-helper-methods)
+- [HTTP Requests](#http-requests)
+  - [Response Helper Methods](#response-helper-methods)
+- [Change the global request options](#change-the-global-request-options)
 - [Fuzzing](#fuzzing)
 - [Logging](#logging)
 - [Modules](#modules)
-- [String matching](#Text-Matching)
+- [Text Matching (Legacy)](#text-matching)
 - [Reporting](#reporting)
-- [Error Handling](#Handle-Connection-Errors)
-- [Custom input handler](#input-handler)
+- [Error Handling](#handle-connection-errors)
+- [Custom input handler](#input-handling)
 - [FAQ](#faq)
 
 ### Starting Point
@@ -42,6 +50,159 @@ Hello World :D
 ```
 
 > at the moment, lotus 0.5-beta is only sending http requests via one http library that means you cannot send a requests by using Socket or DNS, we're planning to add this in the upcoming version
+
+---
+
+## Chainable API (v0.6.0)
+
+Lotus provides a powerful **fluent/chainable API** for string manipulation, HTML parsing, JSON handling, and more. Chain multiple operations together for clean, readable code.
+
+### str() - Chainable Strings
+
+```lua
+-- Basic chaining
+str("  hello world  "):trim():upper():value()
+-- "HELLO WORLD"
+
+-- Multiple transformations
+str("hello"):upper():append("!"):prepend("["):value()
+-- "[HELLO!]"
+
+-- Split and process
+str("a,b,c"):split(","):join(" | "):value()
+-- "a | b | c"
+
+-- Regex operations
+str("abc123def456"):find_all("\\d+"):value()
+-- {"123", "456"}
+
+str("hello123world"):replace_regex("\\d+", "X"):value()
+-- "helloXworld"
+
+-- Encoding (all chainable)
+str("<script>"):html_encode():value()           -- "&lt;script&gt;"
+str("hello"):base64_encode():value()            -- "aGVsbG8="
+str("hello world"):url_encode():value()         -- "hello%20world"
+
+-- Predicates
+str("test.php"):endswith(".php")                -- true
+str("hello"):contains("ell")                    -- true
+str("  "):is_empty()                            -- false
+
+-- Print in chain (continues chain)
+str("debug"):upper():print():append("!"):value()
+-- prints "DEBUG", returns "DEBUG!"
+```
+
+**All str() methods:**
+- Transforms: `upper()`, `lower()`, `trim()`, `ltrim()`, `rtrim()`, `reverse()`, `replace(from,to)`, `sub(start,end)`, `append(s)`, `prepend(s)`, `rep(n)`
+- Regex: `match(pattern)`, `find(pattern)`, `find_all(pattern)`, `replace_regex(pattern,repl)`
+- Encoding: `url_encode()`, `url_decode()`, `base64_encode()`, `base64_decode()`, `html_encode()`, `html_decode()`
+- Predicates: `contains(s)`, `startswith(s)`, `endswith(s)`, `is_empty()`, `equals(s)`
+- Output: `value()`, `val()`, `v()`, `len()`, `print()`
+- Split: `split(delim)` -> returns chainable table
+
+### html() - Chainable HTML Parser
+
+```lua
+-- Select and iterate
+html(body):select("a.link"):each(function(el)
+    local href = el:attr("href"):value()
+    local text = el:text():value()
+    println(href .. " -> " .. text)
+end)
+
+-- Get first match
+local title = html(body):select_one("h1"):text():value()
+
+-- Chain selections
+html(body):select("div.content"):select("p"):first():text():value()
+
+-- Get multiple attributes
+html(body):select("a"):attr("href"):value()
+
+-- XSS selector generation
+html("<img src=x onerror=alert(1)>"):xss_selector():value()
+-- 'img[src="x"][onerror="alert(1)"]'
+
+-- Count matches
+html(body):select("a"):len()
+```
+
+**All html() methods:**
+- Selection: `select(css)`, `select_one(css)`, `first()`, `last()`, `get(idx)`
+- Extract: `attr(name)`, `text()`, `xss_selector()`
+- Output: `value()`, `list()`, `len()`
+- Iterate: `each(fn)`
+
+### json() - Chainable JSON Navigator
+
+```lua
+-- Parse and navigate with dot notation
+json(body):get("data.users.0.name"):value()
+
+-- Iterate arrays
+json(body):get("users"):each(function(user)
+    println(user:get("name"):value())
+end)
+
+-- Check existence
+json(body):has("error")                         -- true/false
+json(body):get("data"):is_null()                -- true/false
+
+-- Get object keys
+json(body):get("config"):keys():value()         -- {"key1", "key2"}
+
+-- Pretty print
+json(body):pretty():print()
+```
+
+**All json() methods:**
+- Navigate: `get(key)`, `get("path.to.value")`, `has(key)`, `keys()`
+- Type checks: `is_null()`, `is_string()`, `is_number()`, `is_bool()`, `is_array()`, `is_object()`
+- Output: `value()`, `str()`, `pretty()`, `len()`, `print()`
+- Iterate: `each(fn)`
+
+### tbl() - Chainable Tables
+
+```lua
+-- Create from array
+tbl({"a", "b", "c"}):join(", "):value()         -- "a, b, c"
+
+-- Filter and map
+tbl(payloads)
+    :filter(function(p) return str(p):contains("<") end)
+    :map(function(p) return str(p):upper():value() end)
+    :value()
+
+-- Sort and unique
+tbl({"z", "a", "a", "m"}):unique():sort():value()
+-- {"a", "m", "z"}
+
+-- Find first match
+tbl(items):find(function(x) return x == "target" end):value()
+
+-- Any/All predicates
+tbl({"1", "2", "3"}):all(function(x) return tonumber(x) end)  -- true
+tbl({"a", "2", "c"}):any(function(x) return tonumber(x) end)  -- true
+```
+
+**All tbl() methods:**
+- Access: `get(idx)`, `first()`, `last()`, `take(n)`, `skip(n)`
+- Transform: `reverse()`, `sort()`, `unique()`, `join(delim)`
+- Iterate: `map(fn)`, `filter(fn)`, `each(fn)`, `find(fn)`
+- Predicates: `any(fn)`, `all(fn)`, `contains(s)`
+- Output: `value()`, `val()`, `len()`, `print()`
+
+### Global Functions
+
+```lua
+sleep(2)                    -- pause 2 seconds
+sleep(0.5)                  -- pause 500ms
+randstr(16):value()         -- random 16-char string (chainable)
+```
+
+---
 
 ### URL Parsing
 * [Changing the URL Query](#changing-the-url-query)
@@ -104,6 +265,50 @@ local new_url = pathjoin(HttpMessage:path(),"admin/login.php")
 -- http://target.com/index.php/admin.login.php
 ```
 
+#### URL Helper Methods
+Additional methods for working with URLs:
+- Get single parameter value
+```lua
+-- URL = https://target.com/?id=123&name=test
+local id = HttpMessage:get_param("id")
+-- "123"
+```
+- Get all parameters as table
+```lua
+-- URL = https://target.com/?id=123&name=test
+local params = HttpMessage:get_params()
+-- params.id = "123", params.name = "test"
+```
+- Check if parameter exists
+```lua
+if HttpMessage:has_param("id") then
+    println("id parameter exists")
+end
+```
+- Get hostname
+```lua
+-- URL = https://api.example.com/users
+local host = HttpMessage:host()
+-- "api.example.com"
+```
+- Get URL scheme
+```lua
+local scheme = HttpMessage:scheme()
+-- "https"
+```
+- Get port number
+```lua
+-- URL = https://example.com:8443/
+local port = HttpMessage:port()
+-- 8443 (returns default port if not specified: 80 for http, 443 for https)
+```
+- Set URL path
+```lua
+-- URL = https://target.com/users?id=1
+local new_url = HttpMessage:set_path("/admin")
+-- "https://target.com/admin?id=1"
+```
+
 ### HTTP Requests
 Your lua script must call the HTTP lua class whose methods are assigned to the rust HTTP module in order to send HTTP requests
 Send any method that you wish with a body and headers, but make sure that the headers are in Lua tables rather than strings
@@ -151,6 +356,37 @@ local resp = http:send{url="http://google.com", headers=headers}
 - Change redirects limit
 ```lua
 http:send{url="http://google.com",redirects=5}
+```
+
+#### Response Helper Methods
+The response object returned by `http:send` has several helper methods:
+- Parse response body as JSON
+```lua
+local resp = http:send{url="https://api.example.com/users/1"}
+local data = resp:json()
+println(data.name) -- access JSON fields directly
+```
+- Check if response status is successful (2xx)
+```lua
+local resp = http:send{url="https://example.com"}
+if resp:status_ok() then
+    println("Request succeeded!")
+end
+```
+- Check if header exists (case-insensitive)
+```lua
+local resp = http:send{url="https://example.com"}
+if resp:has_header("Content-Type") then
+    println("Has content type header")
+end
+```
+- Get header value (case-insensitive)
+```lua
+local resp = http:send{url="https://example.com"}
+local content_type = resp:get_header("content-type")
+-- "text/html; charset=utf-8"
+local location = resp:get_header("Location")
+-- returns nil if header doesn't exist
 ```
 
 ### Change the global request options
@@ -267,47 +503,40 @@ end
 
 
 ### Text Matching
-while writing your own script, you need to ensure that you have been matched the right text to avoid False Postive
-lotus gives you many easy ways for text matching/procssing
 
-- match with regex
+> **Note**: The functions below are legacy APIs kept for backwards compatibility.
+> For new scripts, prefer using the [Utility Classes](#utility-classes) (`Str`, `Json`, `Html`, `Regex`).
+
+#### Legacy String Functions
 ```lua
-SCAN_TYPE = 2
-function main()
-	local resp = http:send("GET","http://testphp.vulnweb.com/artists.php?artist=1")
-	local body = resp.body
-	local searched = html_search(body,"h2[id=\"pageName\"]")
-	println(searched)
-	-- <h2 id="pageName">artist: r4w8173</h2>
-end
+-- These work but prefer Str class methods
+str_contains("I use lua", "use")     -- true (use Str:contains instead)
+str_startswith("I use lua", "I use") -- true (use Str:startswith instead)
+str_endswith("test.php", ".php")     -- true (use Str:endswith instead)
+str_split("a,b,c", ",")              -- table  (use Str:split instead)
+str_trim("  hello  ")                -- "hello" (use Str:trim instead)
+is_match("\\d+", "123")              -- true (use Regex:match instead)
+random_string(16)                    -- random string (use Str:random instead)
 ```
-generating CSS Selector Pattern for XSS Payloads
-you can use this for the XSS CVES, to ensure that the payload is render in the page or not
+
+#### Legacy JSON Functions
 ```lua
-XSS_PAYLOAD = "<img src=x onerror=alert(1)>"
-function main()
-	local search_pattern = generate_css_selector(XSS_PAYLOAD)
-	println(search_pattern)
-	-- img[onerror="alert(1)"][src="x"]
-end
+-- These work but prefer Json class methods
+json_encode({name = "test"})         -- JSON string (use Json:encode instead)
+json_decode('{"a":1}')               -- Lua table (use Json:decode instead)
 ```
-- match with Regex
+
+#### Legacy HTML Functions
 ```lua
-function main()
-	local matched = is_match("\\d\\d\\d","123")
-	println(string.format("MATCHED: %s",matched))
-	-- MATCHED: true
-end
+-- These work but prefer Html class methods
+html_search(html, "h2#title")        -- table (use Html:select instead)
+html_attr(element, "href")           -- string (use Html:attr instead)
+html_text(element)                   -- string (use Html:text instead)
+generate_css_selector(payload)       -- string (use Html:xss_selector instead)
 ```
-- check if the string includes data
-```lua
-str_contains("I use lua","use") -- true
-```
-- check if the string startswith
-```lua
-str_startswith("I use lua","I use") -- true
-```
-- text matching with and / or conditions
+
+#### ResponseMatcher (Advanced Matching)
+For complex text matching with multiple conditions:
 ```lua
 SCAN_TYPE = 2
 
@@ -315,11 +544,9 @@ function main()
 	local match_one = {"test","Mike"}
 	local match_all = {"Mike","true"}
 	local BODY = '{"name":"Mike","is_admin":true}'
-	-- match body with `or` conditions
-	-- it means the function will returns true if one of the elements in the list matched with the body
+	-- match body with `or` conditions (returns true if ANY element matches)
 	ResponseMatcher:match_body_once(BODY,match_one) -- true
-	-- match body with `and` conditions
-	-- it means the function will returns true if all of the elements in the list matched with the body
+	-- match body with `and` conditions (returns true if ALL elements match)
 	ResponseMatcher:match_body(BODY,match_all) -- true
 end
 ```

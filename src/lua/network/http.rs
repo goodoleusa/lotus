@@ -24,7 +24,8 @@ pub use http_lua_api::{MultiPart, Sender};
 use lazy_static::lazy_static;
 use std::sync::Arc;
 use std::time::Duration;
-use tealr::{mlu::FromToLua, TypeName};
+use mlua::{UserData, Value};
+use tealr::TypeName;
 use tokio::sync::Mutex;
 
 lazy_static! {
@@ -34,7 +35,7 @@ lazy_static! {
     pub static ref VERBOSE_MODE: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
 }
 
-#[derive(Debug, FromToLua, TypeName)]
+#[derive(Debug, Clone, TypeName)]
 pub struct HttpResponse {
     pub reason: String,
     pub version: String,
@@ -43,6 +44,91 @@ pub struct HttpResponse {
     pub status: i32,
     pub body: String,
     pub headers: HashMap<String, String>,
+}
+
+impl UserData for HttpResponse {
+    fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
+        fields.add_field_method_get("reason", |_, this| Ok(this.reason.clone()));
+        fields.add_field_method_get("version", |_, this| Ok(this.version.clone()));
+        fields.add_field_method_get("is_redirect", |_, this| Ok(this.is_redirect));
+        fields.add_field_method_get("url", |_, this| Ok(this.url.clone()));
+        fields.add_field_method_get("status", |_, this| Ok(this.status));
+        fields.add_field_method_get("body", |_, this| Ok(this.body.clone()));
+        fields.add_field_method_get("headers", |_, this| Ok(this.headers.clone()));
+    }
+
+    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
+        // json() - parse body as JSON and return Lua table
+        methods.add_method("json", |lua, this, ()| {
+            match serde_json::from_str::<serde_json::Value>(&this.body) {
+                Ok(json_value) => json_to_lua(lua, &json_value),
+                Err(e) => Err(mlua::Error::RuntimeError(format!(
+                    "JSON parse error: {}",
+                    e
+                ))),
+            }
+        });
+
+        // status_ok() - check if status code is 2xx
+        methods.add_method("status_ok", |_, this, ()| {
+            Ok(this.status >= 200 && this.status < 300)
+        });
+
+        // has_header(name) - case-insensitive header check
+        methods.add_method("has_header", |_, this, name: String| {
+            let name_lower = name.to_lowercase();
+            Ok(this
+                .headers
+                .keys()
+                .any(|k| k.to_lowercase() == name_lower))
+        });
+
+        // get_header(name) - get header value (case-insensitive)
+        methods.add_method("get_header", |_, this, name: String| {
+            let name_lower = name.to_lowercase();
+            for (k, v) in &this.headers {
+                if k.to_lowercase() == name_lower {
+                    return Ok(Some(v.clone()));
+                }
+            }
+            Ok(None)
+        });
+    }
+}
+
+/// Convert a serde_json::Value to a Lua value
+fn json_to_lua<'lua>(
+    lua: &'lua mlua::Lua,
+    value: &serde_json::Value,
+) -> Result<Value<'lua>, mlua::Error> {
+    match value {
+        serde_json::Value::Null => Ok(Value::Nil),
+        serde_json::Value::Bool(b) => Ok(Value::Boolean(*b)),
+        serde_json::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                Ok(Value::Integer(i))
+            } else if let Some(f) = n.as_f64() {
+                Ok(Value::Number(f))
+            } else {
+                Err(mlua::Error::RuntimeError("Invalid JSON number".to_string()))
+            }
+        }
+        serde_json::Value::String(s) => Ok(Value::String(lua.create_string(s)?)),
+        serde_json::Value::Array(arr) => {
+            let table = lua.create_table()?;
+            for (i, val) in arr.iter().enumerate() {
+                table.set(i + 1, json_to_lua(lua, val)?)?;
+            }
+            Ok(Value::Table(table))
+        }
+        serde_json::Value::Object(obj) => {
+            let table = lua.create_table()?;
+            for (key, val) in obj.iter() {
+                table.set(key.as_str(), json_to_lua(lua, val)?)?;
+            }
+            Ok(Value::Table(table))
+        }
+    }
 }
 
 impl Sender {
