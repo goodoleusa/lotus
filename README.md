@@ -39,14 +39,44 @@ We encourage community contributions! Share feedback, report issues, or suggest 
 
 Lotus scripts provide a variety of powerful capabilities for web security testing, including:
 
-- **Regex Matching:** Advanced regex API with full support for all regex options.
-- **String Matching:** Simple and efficient string matching functions.
-- **Multi-Threading:** Two threading managers for optimal scanning, including race condition detection and fast parameter scanning.
-- **URL Parsing:** Extract parameters and set payloads for URL parsing with ease.
-- **HTML Parsing/Searching:** CSS selector functions and pattern generation for HTML analysis.
-- **OS Utilities:** Access various OS utilities like file reading, logging, path management, and thread sleeping.
-- **HTTP Requests:** Send HTTP requests with all methods and custom headers, including multipart requests.
-- **Encoding/Decoding:** Built-in functions for encoding and decoding formats such as base64 and URL encoding.
+### New in v0.6.0: Chainable Fluent API
+
+Write expressive, readable security scripts with method chaining:
+
+```lua
+-- String operations with chaining
+str("  HELLO  "):trim():lower():replace("hello", "world"):value()
+-- "world"
+
+-- Split, filter, and transform
+str("admin,user,guest"):split(",")
+    :filter(function(x) return x ~= "guest" end)
+    :join("|"):value()
+-- "admin|user"
+
+-- HTML parsing with CSS selectors
+html(body):select("a.external"):each(function(el)
+    println(el:attr("href"):value())
+end)
+
+-- JSON navigation with dot notation
+json(resp.body):get("data.users.0.name"):value()
+
+-- Built-in encoding
+str(payload):url_encode():base64_encode():value()
+```
+
+### Core Capabilities
+
+- **`str()`:** Chainable strings - trim, split, replace, regex, encoding
+- **`html()`:** CSS selectors with chaining - select, attr, text, xss_selector
+- **`json()`:** Navigate JSON with dot notation - get, keys, each
+- **`tbl()`:** Chainable arrays - map, filter, sort, unique
+- **Response Helpers:** `resp:json()`, `resp:status_ok()`, `resp:get_header()`
+- **URL Helpers:** `HttpMessage:get_param()`, `host()`, `scheme()`, `port()`
+- **Multi-Threading:** Two threading managers for optimal scanning
+- **HTTP Requests:** All methods, custom headers, multipart support
+- **Encoding:** Base64, URL, HTML - all chainable
 
 Additionally, with Lua libraries available on LuaRocks, you can further extend Lotus's capabilities for your security testing needs.
 

@@ -14,36 +14,16 @@
 
 use crate::utils::bar::GLOBAL_PROGRESS_BAR;
 use reqwest::{
-    header::{HeaderMap, HeaderName, HeaderValue},
-    multipart::{Form, Part},
+    header::HeaderMap,
     redirect, Client, Method, Proxy,
 };
 use std::collections::HashMap;
-mod http_lua_api;
-pub use http_lua_api::{MultiPart, Sender};
-use lazy_static::lazy_static;
-use std::sync::Arc;
 use std::time::Duration;
-use tealr::{mlu::FromToLua, TypeName};
-use tokio::sync::Mutex;
 
-lazy_static! {
-    pub static ref REQUESTS_LIMIT: Arc<Mutex<i32>> = Arc::new(Mutex::new(5));
-    pub static ref REQUESTS_SENT: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
-    pub static ref SLEEP_TIME: Arc<Mutex<u64>> = Arc::new(Mutex::new(5));
-    pub static ref VERBOSE_MODE: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
-}
-
-#[derive(Debug, FromToLua, TypeName)]
-pub struct HttpResponse {
-    pub reason: String,
-    pub version: String,
-    pub is_redirect: bool,
-    pub url: String,
-    pub status: i32,
-    pub body: String,
-    pub headers: HashMap<String, String>,
-}
+use super::config::{REQUESTS_LIMIT, REQUESTS_SENT, SLEEP_TIME, VERBOSE_MODE};
+use super::http_lua_api::{MultiPart, Sender};
+use super::response::HttpResponse;
+use super::utils::create_form;
 
 impl Sender {
     /// Build your own http request module with user option
@@ -55,34 +35,10 @@ impl Sender {
             redirects,
             proxy,
             merge_headers: true,
-            http_options: http_lua_api::HttpVersion::default(),
+            http_options: super::http_lua_api::HttpVersion::default(),
         }
     }
 
-    fn create_form(&self, multipart: HashMap<String, MultiPart>) -> Form {
-        let mut form = Form::new();
-        for (key, part) in multipart {
-            let mut builder = Part::text(part.content);
-            if let Some(filename) = part.filename {
-                builder = builder.file_name(filename);
-            }
-            if let Some(content_type) = part.content_type {
-                builder = builder.mime_str(&content_type).unwrap();
-            }
-            if let Some(headers) = part.headers {
-                let mut current_headers = HeaderMap::new();
-                headers.iter().for_each(|(name, value)| {
-                    current_headers.insert(
-                        HeaderName::from_bytes(name.as_bytes()).unwrap(),
-                        HeaderValue::from_bytes(value.as_bytes()).unwrap(),
-                    );
-                });
-                builder = builder.headers(current_headers);
-            }
-            form = form.part(key, builder);
-        }
-        form
-    }
     fn build_client(
         &self,
         timeout: u64,
@@ -124,6 +80,7 @@ impl Sender {
 
         builder.build()
     }
+
     /// Send http request to custom url with user options (proxy, headers, etc.)
     /// the response should be HashMap with RespType enum
     ///
@@ -202,7 +159,7 @@ impl Sender {
             if multipart.is_none() {
                 request
             } else {
-                request.multipart(self.create_form(multipart.unwrap()))
+                request.multipart(create_form(multipart.unwrap()))
             }
         };
         let response = match request.send().await {
