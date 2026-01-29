@@ -63,6 +63,9 @@ urlencoding = "2.1"
 # Random
 rand = "0.8"
 
+# Directories
+dirs-next = "2.0"
+
 # Pin crates to avoid rustc version issues (transitive deps)
 time = "=0.3.36"
 base64ct = "=1.6.0"
