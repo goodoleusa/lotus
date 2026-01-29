@@ -304,10 +304,10 @@ impl UserData for SecretsManager {
         methods.add_method("configured_services", |lua, this, ()| {
             let table = lua.create_table()?;
             let services = vec![
-                "shodan", "virustotal", "securitytrails", "censys_id", "hunter",
+                "shodan", "virustotal", "securitytrails", "censys_id", "censys_secret", "hunter",
                 "github", "gitlab", "abuseipdb", "otx", "binaryedge", "chaos",
                 "cloudflare", "passivetotal", "urlscan", "whoisxml", "zoomeye",
-                "fofa", "netlas", "fullhunt", "onyphe", "intelx", "leakix",
+                "fofa", "fofa_email", "netlas", "fullhunt", "onyphe", "intelx", "leakix",
                 "spiderfoot", "openai", "anthropic", "huggingface"
             ];
             
