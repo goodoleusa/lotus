@@ -4,6 +4,7 @@ Lotus provides comprehensive integration with popular OSINT (Open Source Intelli
 
 ## Table of Contents
 
+- [Secrets Management](#secrets-management)
 - [Quick Start](#quick-start)
 - [Available Tool Integrations](#available-tool-integrations)
 - [Core OSINT Functions](#core-osint-functions)
@@ -20,6 +21,139 @@ Lotus provides comprehensive integration with popular OSINT (Open Source Intelli
   - [Zeek](#zeek---network-analysis)
 - [Building Custom OSINT Scripts](#building-custom-osint-scripts)
 - [Example Scripts](#example-scripts)
+
+---
+
+## Secrets Management
+
+Lotus provides a centralized secrets manager for API keys that automatically loads from environment variables and config files.
+
+### Quick Setup
+
+**Option 1: Environment Variables**
+```bash
+export SHODAN_API_KEY="your-key"
+export VIRUSTOTAL_API_KEY="your-key"
+export GITHUB_TOKEN="your-token"
+```
+
+**Option 2: Config File** (`.lotus_secrets.json` in current dir or `~/.lotus_secrets.json`)
+```json
+{
+    "shodan": "your-shodan-api-key",
+    "virustotal": "your-virustotal-api-key",
+    "github": "your-github-token",
+    "abuseipdb": "your-abuseipdb-key"
+}
+```
+
+**Option 3: KEY=VALUE File** (`.lotus_secrets`)
+```
+shodan=your-shodan-api-key
+virustotal=your-virustotal-api-key
+github=your-github-token
+```
+
+### Using Secrets in Scripts
+
+```lua
+-- Get a secret (returns nil if not found)
+local shodan_key = get_secret("shodan")
+
+-- Require a secret (throws error if not found)
+local vt_key = require_secret("virustotal")
+
+-- Check if secret exists
+if has_secret("github") then
+    println("GitHub token is configured")
+end
+
+-- Use the Secrets manager directly
+local key = Secrets:get("shodan")
+local key = Secrets:get_or("shodan", "default-value")
+local key = Secrets:require("shodan")  -- errors if missing
+
+-- See what's configured
+local services = Secrets:configured_services()
+for _, service in ipairs(services) do
+    println("Configured: " .. service)
+end
+
+-- Load from custom file
+Secrets:load_file("/path/to/custom_secrets.json")
+
+-- Save current secrets
+Secrets:save("/path/to/backup_secrets.json")
+```
+
+### Supported Environment Variables
+
+The secrets manager automatically loads from these environment variables:
+
+| Service | Environment Variables |
+|---------|----------------------|
+| Shodan | `SHODAN_API_KEY`, `SHODAN_KEY` |
+| VirusTotal | `VIRUSTOTAL_API_KEY`, `VT_API_KEY` |
+| SecurityTrails | `SECURITYTRAILS_API_KEY`, `ST_API_KEY` |
+| Censys | `CENSYS_API_ID`, `CENSYS_API_SECRET` |
+| Hunter.io | `HUNTER_API_KEY`, `HUNTERIO_API_KEY` |
+| GitHub | `GITHUB_TOKEN`, `GH_TOKEN` |
+| GitLab | `GITLAB_TOKEN` |
+| AbuseIPDB | `ABUSEIPDB_API_KEY` |
+| AlienVault OTX | `OTX_API_KEY`, `ALIENVAULT_API_KEY` |
+| BinaryEdge | `BINARYEDGE_API_KEY` |
+| Chaos (PD) | `CHAOS_API_KEY`, `PDCP_API_KEY` |
+| Cloudflare | `CLOUDFLARE_API_KEY`, `CF_API_KEY` |
+| PassiveTotal | `PASSIVETOTAL_API_KEY`, `RISKIQ_API_KEY` |
+| URLScan | `URLSCAN_API_KEY` |
+| WhoisXML | `WHOISXML_API_KEY` |
+| ZoomEye | `ZOOMEYE_API_KEY` |
+| Fofa | `FOFA_API_KEY`, `FOFA_EMAIL` |
+| Netlas | `NETLAS_API_KEY` |
+| FullHunt | `FULLHUNT_API_KEY` |
+| Onyphe | `ONYPHE_API_KEY` |
+| IntelX | `INTELX_API_KEY` |
+| LeakIX | `LEAKIX_API_KEY` |
+| SpiderFoot HX | `SPIDERFOOT_API_KEY` |
+| OpenAI | `OPENAI_API_KEY` |
+| Anthropic | `ANTHROPIC_API_KEY` |
+| HuggingFace | `HF_TOKEN`, `HUGGINGFACE_TOKEN` |
+
+### Example: Using Secrets with Tools
+
+```lua
+SCAN_TYPE = 1
+
+function main()
+    local domain = INPUT_DATA
+    
+    -- Check for required API keys
+    if not has_secret("shodan") then
+        log_warn("Shodan API key not configured, skipping Shodan lookups")
+    end
+    
+    -- Use Shodan with API key
+    if has_secret("shodan") then
+        local shodan = Shodan
+        shodan:init(get_secret("shodan"))
+        local result = shodan:domain(domain)
+        -- process results...
+    end
+    
+    -- Use VirusTotal
+    if has_secret("virustotal") then
+        local vt_key = get_secret("virustotal")
+        local resp = http:send{
+            url = "https://www.virustotal.com/api/v3/domains/" .. domain,
+            headers = {["x-apikey"] = vt_key}
+        }
+        -- process results...
+    end
+    
+    -- Get API endpoint from config
+    local endpoint = APIConfig:endpoint("shodan")  -- "https://api.shodan.io"
+end
+```
 
 ---
 
