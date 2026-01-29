@@ -16,6 +16,7 @@ pub mod cli;
 pub mod lua;
 mod model;
 pub mod utils;
+pub mod web;
 
 use cli::{errors::CliErrors, input::load_scripts::valid_scripts};
 use lua::{

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOTUS // OSINT PLATFORM</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">🪷</span>
+                <span class="logo-text">LOTUS</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="scan">
+                    <span class="nav-icon">🔍</span>
+                    <span>New Scan</span>
+                </a>
+                <a href="#" class="nav-item" data-page="results">
+                    <span class="nav-icon">📁</span>
+                    <span>Results</span>
+                </a>
+                <a href="#" class="nav-item" data-page="secrets">
+                    <span class="nav-icon">🔑</span>
+                    <span>API Keys</span>
+                </a>
+                <a href="#" class="nav-item" data-page="tools">
+                    <span class="nav-icon">🛠️</span>
+                    <span>Tools</span>
+                </a>
+                <a href="#" class="nav-item" data-page="scripts">
+                    <span class="nav-icon">📜</span>
+                    <span>Scripts</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="version">// SYS v2.0.0</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <header class="header">
+                <h1 id="page-title">// DASHBOARD</h1>
+                <div class="header-actions">
+                    <span class="status-indicator online"></span>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard" class="page active">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-keys">0</div>
+                            <div class="stat-label">API KEYS ACTIVE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-scans">0</div>
+                            <div class="stat-label">TOTAL SCANS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-findings">0</div>
+                            <div class="stat-label">FINDINGS</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-tools">14</div>
+                            <div class="stat-label">TOOLS READY</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Scan -->
+                    <div class="card">
+                        <h2>⚡ QUICK SCAN</h2>
+                        <div class="quick-scan">
+                            <input type="text" class="input" id="quick-target" placeholder="ENTER TARGET DOMAIN OR URL...">
+                            <button class="btn btn-primary" onclick="startQuickScan()">
+                                INITIATE SCAN
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="section">
+                        <h2>📡 RECENT ACTIVITY</h2>
+                        <div class="activity-list" id="recent-activity">
+                            <div class="empty-state">NO RECENT ACTIVITY. INITIATE A SCAN TO BEGIN.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Scan Page -->
+                <div id="page-scan" class="page">
+                    <div class="card">
+                        <h2>🎯 CONFIGURE SCAN</h2>
+                        <form onsubmit="startScan(event)">
+                            <div class="form-group">
+                                <label>TARGET</label>
+                                <input type="text" class="input" id="scan-target" placeholder="example.com or https://example.com">
+                                <small>Enter domain, URL, or IP address to scan</small>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group flex-grow">
+                                    <label>SCAN TYPE</label>
+                                    <select class="input" id="scan-type">
+                                        <option value="osint">OSINT - Full Reconnaissance</option>
+                                        <option value="subdomain">Subdomain Enumeration</option>
+                                        <option value="vuln">Vulnerability Scan</option>
+                                        <option value="secrets">Secret Detection</option>
+                                        <option value="threat">Threat Intelligence</option>
+                                    </select>
+                                </div>
+                                <div class="form-group flex-grow">
+                                    <label>SCRIPT</label>
+                                    <select class="input" id="scan-script">
+                                        <option value="">Auto-select based on scan type</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    ⚡ LAUNCH SCAN
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Active Scan Progress -->
+                    <div class="card" id="active-scan-card" style="display: none;">
+                        <h2>📡 ACTIVE SCAN</h2>
+                        <div class="scan-progress">
+                            <div class="progress-info">
+                                <span>TARGET: <span id="scan-target-display">-</span></span>
+                                <span id="scan-progress-text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="scan-progress-bar" style="width: 0%;"></div>
+                            </div>
+                            <div class="scan-message" id="scan-status-message">Initializing...</div>
+                            <button class="btn btn-danger" onclick="stopCurrentScan()">
+                                ⛔ ABORT SCAN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Page -->
+                <div id="page-results" class="page">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2>📊 SCAN RESULTS</h2>
+                            <button class="btn btn-secondary" onclick="refreshResults()">
+                                ↻ REFRESH
+                            </button>
+                        </div>
+                        <div class="results-grid" id="results-list">
+                            <div class="empty-state">NO RESULTS AVAILABLE. INITIATE A SCAN FIRST.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secrets/API Keys Page -->
+                <div id="page-secrets" class="page">
+                    <div class="card">
+                        <h2>➕ ADD API KEY</h2>
+                        <form onsubmit="addSecret(event)">
+                            <div class="form-row">
+                                <div class="form-group flex-grow">
+                                    <label>SERVICE</label>
+                                    <select class="input" id="secret-key">
+                                        <option value="shodan">Shodan</option>
+                                        <option value="virustotal">VirusTotal</option>
+                                        <option value="securitytrails">SecurityTrails</option>
+                                        <option value="censys">Censys</option>
+                                        <option value="hunter">Hunter.io</option>
+                                        <option value="github">GitHub Token</option>
+                                        <option value="abuseipdb">AbuseIPDB</option>
+                                        <option value="otx">AlienVault OTX</option>
+                                    </select>
+                                </div>
+                                <div class="form-group flex-grow">
+                                    <label>API KEY</label>
+                                    <input type="password" class="input" id="secret-value" placeholder="Enter your API key">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    💾 SAVE
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="section">
+                        <h2>🔐 CONFIGURED KEYS</h2>
+                        <p class="section-desc">API keys are stored encrypted and loaded at runtime</p>
+                        <div class="secrets-grid" id="secrets-list">
+                            <div class="empty-state">NO API KEYS CONFIGURED. ADD ONE ABOVE.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Page -->
+                <div id="page-tools" class="page">
+                    <div class="section">
+                        <h2>🔧 AVAILABLE TOOLS</h2>
+                        <p class="section-desc">External security tools integrated with Lotus</p>
+                        <div class="tools-grid" id="tools-list">
+                            <!-- Tools loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scripts Page -->
+                <div id="page-scripts" class="page">
+                    <div class="section">
+                        <h2>📜 LUA SCRIPTS</h2>
+                        <p class="section-desc">Ready-to-use scanning scripts</p>
+                        <div class="scripts-grid" id="scripts-list">
+                            <!-- Scripts loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

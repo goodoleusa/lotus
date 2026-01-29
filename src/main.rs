@@ -26,17 +26,47 @@ use lotus::{
         bar::{ProgressManager, GLOBAL_PROGRESS_BAR},
         logger::init_logger,
     },
+    web::server::start_server,
     ScanTypes,
 };
 use structopt::StructOpt;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    if let Opts::New(new_opts) = Opts::from_args() {
-        new_args(new_opts.scan_type, new_opts.file_name);
-        std::process::exit(0);
+    let opts = Opts::from_args();
+    
+    match opts {
+        Opts::New(new_opts) => {
+            new_args(new_opts.scan_type, new_opts.file_name);
+        }
+        Opts::Serve(serve_opts) => {
+            println!(r#"
+ ██╗      ██████╗ ████████╗██╗   ██╗███████╗
+ ██║     ██╔═══██╗╚══██╔══╝██║   ██║██╔════╝
+ ██║     ██║   ██║   ██║   ██║   ██║███████╗
+ ██║     ██║   ██║   ██║   ██║   ██║╚════██║
+ ███████╗╚██████╔╝   ██║   ╚██████╔╝███████║
+ ╚══════╝ ╚═════╝    ╚═╝    ╚═════╝ ╚══════╝
+         OSINT & THREAT INTEL PLATFORM
+"#);
+            let addr = format!("{}:{}", serve_opts.host, serve_opts.port);
+            println!("🪷 Starting Lotus Web UI on http://{}", addr);
+            println!("   Press Ctrl+C to stop the server\n");
+            
+            if serve_opts.open_browser {
+                let url = format!("http://127.0.0.1:{}", serve_opts.port);
+                if let Err(e) = open::that(&url) {
+                    eprintln!("Failed to open browser: {}", e);
+                }
+            }
+            
+            start_server(&serve_opts.host, serve_opts.port).await;
+        }
+        Opts::Scan(_) => {
+            run_scan().await?;
+        }
     }
-    run_scan().await.unwrap();
+    
     Ok(())
 }
 
