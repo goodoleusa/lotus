@@ -1,20 +1,42 @@
-# Render Blueprint - https://render.com
-# Deploy: Connect GitHub repo → Auto-detects this file
+# ============================================
+# Render Blueprint - Lotus OSINT Platform
+# ============================================
+# Deploy: https://render.com/deploy?repo=https://github.com/YOUR_USER/lotus
+# Or: Dashboard → New → Blueprint → Connect Repo
 
 services:
   - type: web
     name: lotus-osint
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     dockerCommand: lotus serve --host 0.0.0.0 --port 10000
+    
+    # Health check
     healthCheckPath: /api/health
+    
+    # Plan: free, starter, standard, pro
+    plan: free
+    
+    # Region: oregon, frankfurt, singapore, ohio
+    region: oregon
+    
+    # Auto-deploy on git push
+    autoDeploy: true
+    
+    # Environment variables
     envVars:
       - key: PORT
         value: 10000
+      - key: RUST_LOG
+        value: info
+      # Set these in Render Dashboard → Environment
       - key: SHODAN_API_KEY
-        sync: false  # Set in Render dashboard
+        sync: false
       - key: VIRUSTOTAL_API_KEY
         sync: false
       - key: GITHUB_TOKEN
         sync: false
-    autoDeploy: true
+      - key: SECURITYTRAILS_API_KEY
+        sync: false
+      - key: HUNTER_API_KEY
+        sync: false

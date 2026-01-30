@@ -56,18 +56,22 @@ RUN go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && \
 # Copy Lotus binary
 COPY --from=builder /app/target/release/lotus /usr/local/bin/lotus
 
-# Copy example scripts
+# Copy example scripts and static files
 COPY examples /app/examples
 COPY docs /app/docs
+COPY src/web/static /app/static
 
 WORKDIR /app
 
+# Default port (Render uses 10000, others use 8080)
+ENV PORT=8080
+
 # Expose port
-EXPOSE 8080
+EXPOSE ${PORT}
 
-# Health check
+# Health check (uses PORT env var)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/api/health || exit 1
+    CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-# Default command - start web UI
-CMD ["lotus", "serve", "--host", "0.0.0.0", "--port", "8080"]
+# Start web UI on PORT
+CMD lotus serve --host 0.0.0.0 --port ${PORT}
