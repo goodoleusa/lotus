@@ -47,6 +47,8 @@ detect_os() {
         fi
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         echo "macos"
+    elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+        echo "windows"
     else
         echo "unknown"
     fi
@@ -107,9 +109,33 @@ install_deps() {
             fi
             brew install openssl luajit pkg-config
             ;;
+        windows)
+            echo -e "${YELLOW}Windows detected. For best experience, use the PowerShell installer:${NC}"
+            echo -e "${CYAN}  powershell -ExecutionPolicy Bypass -File install.ps1${NC}"
+            echo ""
+            echo -e "${YELLOW}Or use WSL2 for a Linux environment:${NC}"
+            echo -e "${CYAN}  wsl --install${NC}"
+            echo ""
+            echo -e "Attempting to continue with Git Bash/MSYS2..."
+            
+            # Try pacman (MSYS2)
+            if command -v pacman &> /dev/null; then
+                pacman -S --noconfirm \
+                    mingw-w64-x86_64-toolchain \
+                    mingw-w64-x86_64-openssl \
+                    mingw-w64-x86_64-luajit \
+                    git \
+                    curl
+            else
+                echo -e "${RED}Please install MSYS2 or use the PowerShell installer.${NC}"
+                exit 1
+            fi
+            ;;
         *)
             echo -e "${RED}Unsupported OS. Please install dependencies manually.${NC}"
             echo "Required: OpenSSL dev, pkg-config, LuaJIT dev, git, curl"
+            echo ""
+            echo "For Windows, use: powershell -ExecutionPolicy Bypass -File install.ps1"
             exit 1
             ;;
     esac

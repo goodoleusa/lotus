@@ -30,6 +30,13 @@
 curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
 ```
 
+### One-Line Install (Windows PowerShell)
+
+Run as Administrator:
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/BugBlocker/lotus/master/install.ps1'))
+```
+
 ### Manual Quick Install
 
 ```bash
@@ -125,12 +132,58 @@ sudo pacman -S \
 brew install openssl luajit pkg-config
 ```
 
-#### Windows (WSL2 Recommended)
+#### Windows (Native)
+
+**Option A: Using Chocolatey (Recommended)**
+```powershell
+# Install Chocolatey (run as Administrator)
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+# Install dependencies
+choco install git rustup visualstudio2022buildtools -y
+
+# Install Rust
+rustup-init -y
+
+# Restart terminal, then build Lotus
+git clone https://github.com/BugBlocker/lotus.git
+cd lotus
+cargo build --release --features vendored
+```
+
+**Option B: Using winget**
+```powershell
+# Install dependencies
+winget install Git.Git
+winget install Rustlang.Rustup
+winget install Microsoft.VisualStudio.2022.BuildTools
+
+# Configure VS Build Tools (run VS Installer and add C++ workload)
+
+# Restart terminal, then build Lotus
+git clone https://github.com/BugBlocker/lotus.git
+cd lotus
+cargo build --release --features vendored
+```
+
+**Option C: Using WSL2 (Linux environment on Windows)**
 ```powershell
 # Install WSL2
 wsl --install
 
 # Then follow Ubuntu instructions inside WSL2
+```
+
+**Windows Environment Variables:**
+```powershell
+# Add to PowerShell profile or set permanently
+$env:SHODAN_API_KEY = "your-key"
+$env:VIRUSTOTAL_API_KEY = "your-key"
+
+# Or set permanently via System Properties > Environment Variables
+[Environment]::SetEnvironmentVariable("SHODAN_API_KEY", "your-key", "User")
 ```
 
 ### Step 3: Clone and Build
@@ -415,41 +468,79 @@ http://localhost:8080
 ### Common Issues
 
 #### "LuaJIT not found"
+
+**Linux (Ubuntu/Debian):**
 ```bash
-# Ubuntu/Debian
 sudo apt install libluajit-5.1-dev
-
-# macOS
-brew install luajit
-
-# Set PKG_CONFIG_PATH if needed
 export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/local/lib/pkgconfig"
 ```
 
-#### "OpenSSL not found"
+**macOS:**
 ```bash
-# Ubuntu/Debian
-sudo apt install libssl-dev
+brew install luajit
+```
 
-# macOS
+**Windows:**
+```powershell
+# Use vendored feature to bundle Lua
+cargo build --release --features vendored
+```
+
+#### "OpenSSL not found"
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt install libssl-dev
+```
+
+**macOS:**
+```bash
 brew install openssl
 export OPENSSL_DIR=$(brew --prefix openssl)
 ```
 
+**Windows:**
+```powershell
+# OpenSSL is typically bundled with Rust on Windows
+# If issues persist, install via vcpkg:
+vcpkg install openssl:x64-windows
+$env:OPENSSL_DIR = "C:\vcpkg\installed\x64-windows"
+```
+
+#### "LINK : fatal error LNK1181: cannot open input file" (Windows)
+```powershell
+# Install Visual Studio Build Tools with C++ workload
+choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+
+# Or via VS Installer: Add "Desktop development with C++"
+```
+
 #### "Permission denied" on install
 ```bash
-# Use --path instead of system install
+# Linux/macOS: Use --path instead of system install
 cargo install --path . --root ~/.local
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-#### "Tool not found" (e.g., amass, nuclei)
-```bash
-# Add Go bin to PATH
-export PATH="$HOME/go/bin:$PATH"
+```powershell
+# Windows: Install to user directory
+cargo install --path . --root $env:USERPROFILE\.cargo
+```
 
-# Add to ~/.bashrc for persistence
+#### "Tool not found" (e.g., amass, nuclei)
+
+**Linux/macOS:**
+```bash
+export PATH="$HOME/go/bin:$PATH"
 echo 'export PATH="$HOME/go/bin:$PATH"' >> ~/.bashrc
+```
+
+**Windows:**
+```powershell
+# Add Go bin to PATH
+$env:Path += ";$env:USERPROFILE\go\bin"
+# Make permanent
+[Environment]::SetEnvironmentVariable("Path", $env:Path, "User")
 ```
 
 #### Scan hangs or times out
@@ -462,6 +553,22 @@ curl -I https://example.com
 
 # Run with verbose mode
 lotus scan script.lua -v --log debug.log
+```
+
+#### Windows Defender blocks execution
+```powershell
+# Add exclusion for Lotus directory
+Add-MpPreference -ExclusionPath "$env:USERPROFILE\.lotus"
+Add-MpPreference -ExclusionPath "$env:USERPROFILE\.cargo\bin\lotus.exe"
+```
+
+#### PowerShell execution policy error
+```powershell
+# Allow script execution for current session
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# Or permanently for current user
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
 ### Getting Help
