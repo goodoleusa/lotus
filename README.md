@@ -115,6 +115,52 @@ docker run -it lotus-osint scan --help
 
 See [INSTALL.md](INSTALL.md) for detailed installation instructions.
 
+### ☁️ One-Click Cloud Deploy
+
+| Platform | Deploy | Free Tier |
+|----------|--------|-----------|
+| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/lotus) | $5/mo credit |
+| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BugBlocker/lotus) | 750 hrs/mo |
+| **GitHub Codespaces** | [![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/BugBlocker/lotus) | 60 hrs/mo |
+
+<details>
+<summary><b>🚀 Manual Cloud Deployment</b></summary>
+
+#### Railway (Fastest)
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+railway login
+railway init
+railway up
+```
+
+#### Render
+1. Go to [render.com](https://render.com)
+2. New → Web Service → Connect GitHub repo
+3. It auto-detects `render.yaml` - just click Deploy!
+
+#### Fly.io
+```bash
+# Install flyctl
+curl -L https://fly.io/install.sh | sh
+
+# Deploy
+flyctl auth login
+flyctl launch --copy-config
+flyctl secrets set SHODAN_API_KEY=xxx VIRUSTOTAL_API_KEY=xxx
+flyctl deploy
+```
+
+#### GitHub Codespaces (Instant Dev Environment)
+1. Click "Code" → "Codespaces" → "Create codespace"
+2. Wait ~2 min for setup
+3. Run `lotus serve` - UI opens automatically!
+
+</details>
+
 ---
 
 ## ✨ Features
