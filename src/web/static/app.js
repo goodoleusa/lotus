@@ -394,8 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboard();
     
     // Retro startup effect
-    console.log('%c🪷 LOTUS OSINT PLATFORM INITIALIZED', 
+    console.log('%c⚔️ ATROPOS INITIALIZED', 
         'color: #ff71ce; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px #ff71ce;');
-    console.log('%cSystem Status: ONLINE', 
+    console.log('%cThe Thread Cutter • System Status: ONLINE', 
         'color: #01cdfe; font-size: 14px;');
 });

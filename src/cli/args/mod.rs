@@ -7,36 +7,37 @@ use serve::ServeOpts;
 use structopt::StructOpt;
 
 const ABOUT: &str = r#"
-Lotus - Fast Web Security Scanner & OSINT Tool
-===============================================
+Atropos - The Thread Cutter • OSINT & Security Platform
+========================================================
+
+"She who cannot be turned" - Weave intelligence. Measure threats. Cut through the noise.
 
 A powerful security automation framework using Lua scripts for:
-  • Web vulnerability scanning (XSS, SQLi, SSTI, etc.)
   • OSINT and reconnaissance (subdomains, emails, infrastructure)
-  • Threat intelligence gathering
-  • Custom security automation
+  • Threat intelligence gathering (Shodan, VirusTotal, etc.)
+  • Web vulnerability scanning (XSS, SQLi, SSTI, etc.)
+  • Secret detection and security automation
 
 QUICK START:
-  # Scan a URL with scripts
-  echo "https://example.com" | lotus scan ./scripts/
+  # Scan a target with scripts
+  echo "example.com" | atropos scan osint_scanner.lua
 
-  # Scan with a single script
-  echo "example.com" | lotus scan osint_scanner.lua
+  # Scan with output file
+  echo "example.com" | atropos scan ./scripts/ -o results.json
 
-  # Scan multiple URLs from file
-  lotus scan ./scripts/ --urls targets.txt -o results.json
+  # Start web UI
+  atropos serve
 
   # With verbose output and custom workers
-  cat urls.txt | lotus scan ./scripts/ -v -w 20
+  cat targets.txt | atropos scan ./scripts/ -v -w 20
 
 SECRETS MANAGEMENT:
   Set API keys via environment variables:
     export SHODAN_API_KEY="your-key"
     export VIRUSTOTAL_API_KEY="your-key"
   
-  Or create ~/.lotus_secrets.json (see docs/osint_integration.md)
+  Or create ~/.atropos_secrets.json (see docs/osint_integration.md)
 
-For more information: https://github.com/BugBlocker/lotus
 Documentation: docs/lua_scripting.md, docs/osint_integration.md
 "#;
 
@@ -45,22 +46,22 @@ Run security scans using Lua scripts against target URLs/hosts.
 
 EXAMPLES:
   # Basic URL scanning
-  echo "https://target.com/page?id=1" | lotus scan xss_scanner.lua
+  echo "https://target.com/page?id=1" | atropos scan xss_scanner.lua
 
   # OSINT reconnaissance
-  echo "example.com" | lotus scan examples/threat_intel_scanner.lua
+  echo "example.com" | atropos scan examples/threat_intel_scanner.lua
 
   # Scan with output file
-  cat targets.txt | lotus scan ./vuln_scripts/ -o results.json
+  cat targets.txt | atropos scan ./vuln_scripts/ -o results.json
 
   # With proxy (for Burp/ZAP)
-  echo "https://target.com" | lotus scan script.lua -p http://127.0.0.1:8080
+  echo "https://target.com" | atropos scan script.lua -p http://127.0.0.1:8080
 
   # Pass environment variables to scripts
-  echo "target.com" | lotus scan script.lua --env-vars '{"API_KEY":"xxx"}'
+  echo "target.com" | atropos scan script.lua --env-vars '{"API_KEY":"xxx"}'
 
   # Resume interrupted scan
-  lotus scan ./scripts/ --urls targets.txt --resume resume.cfg
+  atropos scan ./scripts/ --urls targets.txt --resume resume.cfg
 
 INPUT TYPES (set SCAN_TYPE in your Lua script):
   1 = HOSTS     - Domain/IP only (e.g., "example.com")
@@ -74,10 +75,10 @@ Generate a new Lua script template for security scanning.
 
 EXAMPLES:
   # Create a URL parameter scanner
-  lotus new --type 2 -o my_scanner.lua
+  atropos new --type 2 -o my_scanner.lua
 
   # Create a host/domain scanner (for OSINT)
-  lotus new --type 1 -o osint_recon.lua
+  atropos new --type 1 -o osint_recon.lua
 
 SCRIPT TYPES:
   1 = HOST scanner   - For domain/IP reconnaissance
@@ -91,16 +92,16 @@ Start the Lotus web UI server.
 
 EXAMPLES:
   # Start on default port (8080)
-  lotus serve
+  atropos serve
 
   # Start on custom port
-  lotus serve --port 3000
+  atropos serve --port 3000
 
   # Bind to all interfaces (for network access)
-  lotus serve --host 0.0.0.0 --port 8080
+  atropos serve --host 0.0.0.0 --port 8080
 
   # Open browser automatically
-  lotus serve --open
+  atropos serve --open
 
 FEATURES:
   • Dashboard with scan statistics
@@ -112,10 +113,10 @@ FEATURES:
 
 #[derive(Debug, StructOpt)]
 #[structopt(
-    name = "lotus",
-    about = "Fast Web Security Scanner & OSINT Tool",
+    name = "atropos",
+    about = "The Thread Cutter • OSINT & Security Platform",
     long_about = ABOUT,
-    after_help = "Use 'lotus <command> --help' for more information about a command.\nReport issues: https://github.com/BugBlocker/lotus/issues"
+    after_help = "Use 'atropos <command> --help' for more information about a command."
 )]
 pub enum Opts {
     #[structopt(about = "Create a new Lua script template", long_about = NEW_ABOUT)]

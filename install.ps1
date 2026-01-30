@@ -1,5 +1,5 @@
 # ============================================
-# Lotus OSINT Platform - Windows Installation Script
+# Atropos OSINT Platform - Windows Installation Script
 # ============================================
 # Run as Administrator: powershell -ExecutionPolicy Bypass -File install.ps1
 
@@ -27,7 +27,7 @@ Write-Host @"
 "@ -ForegroundColor Magenta
 
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host "Welcome to the Lotus Installation Script for Windows" -ForegroundColor Yellow
+Write-Host "Welcome to the Atropos Installation Script for Windows" -ForegroundColor Yellow
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 Write-Host ""
 
@@ -118,7 +118,7 @@ function Install-Rust {
 function Install-LuaJIT {
     Write-Host "`n[4/6] Setting up LuaJIT..." -ForegroundColor Cyan
     
-    $luaDir = "$env:USERPROFILE\.lotus\lua"
+    $luaDir = "$env:USERPROFILE\.atropos\lua"
     
     if (Test-Path "$luaDir\lua51.dll") {
         Write-Host "  ✓ LuaJIT already set up" -ForegroundColor Green
@@ -148,14 +148,14 @@ function Install-LuaJIT {
     $env:LUA_LIB_NAME = "lua51"
 }
 
-# Install Lotus
-function Install-Lotus {
-    Write-Host "`n[5/6] Installing Lotus..." -ForegroundColor Cyan
+# Install Atropos
+function Install-Atropos {
+    Write-Host "`n[5/6] Installing Atropos..." -ForegroundColor Cyan
     
-    $lotusDir = "$env:USERPROFILE\.lotus"
-    $repoDir = "$lotusDir\lotus-repo"
+    $atroposDir = "$env:USERPROFILE\.atropos"
+    $repoDir = "$atroposDir\atropos-repo"
     
-    New-Item -ItemType Directory -Force -Path $lotusDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $atroposDir | Out-Null
     
     if (Test-Path $repoDir) {
         Write-Host "  Updating existing installation..." -ForegroundColor Yellow
@@ -163,30 +163,30 @@ function Install-Lotus {
         git pull origin master
     } else {
         Write-Host "  Cloning repository..." -ForegroundColor Yellow
-        git clone https://github.com/BugBlocker/lotus.git $repoDir
+        git clone https://github.com/BugBlocker/atropos.git $repoDir
         Push-Location $repoDir
     }
     
-    Write-Host "  Building Lotus (this may take several minutes)..." -ForegroundColor Yellow
+    Write-Host "  Building Atropos (this may take several minutes)..." -ForegroundColor Yellow
     
     # Build with vendored Lua to avoid dependency issues
     cargo build --release --features vendored
     
     # Copy binary to a location in PATH
     $binDir = "$env:USERPROFILE\.cargo\bin"
-    Copy-Item "target\release\lotus.exe" "$binDir\lotus.exe" -Force
+    Copy-Item "target\release\atropos.exe" "$binDir\atropos.exe" -Force
     
     Pop-Location
     
-    Write-Host "  ✓ Lotus installed to $binDir\lotus.exe" -ForegroundColor Green
+    Write-Host "  ✓ Atropos installed to $binDir\atropos.exe" -ForegroundColor Green
 }
 
 # Setup secrets
 function Setup-Secrets {
     Write-Host "`n[6/6] Setting up configuration..." -ForegroundColor Cyan
     
-    $configDir = "$env:USERPROFILE\.lotus"
-    $secretsFile = "$env:USERPROFILE\.lotus_secrets.json"
+    $configDir = "$env:USERPROFILE\.atropos"
+    $secretsFile = "$env:USERPROFILE\.atropos_secrets.json"
     
     New-Item -ItemType Directory -Force -Path $configDir | Out-Null
     
@@ -256,20 +256,20 @@ function Print-Complete {
     Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Quick Start:" -ForegroundColor Magenta
-    Write-Host "  lotus --help              " -ForegroundColor Cyan -NoNewline
+    Write-Host "  atropos --help              " -ForegroundColor Cyan -NoNewline
     Write-Host "Show help"
-    Write-Host "  lotus serve               " -ForegroundColor Cyan -NoNewline
+    Write-Host "  atropos serve               " -ForegroundColor Cyan -NoNewline
     Write-Host "Start web UI"
-    Write-Host "  lotus scan script.lua     " -ForegroundColor Cyan -NoNewline
+    Write-Host "  atropos scan script.lua     " -ForegroundColor Cyan -NoNewline
     Write-Host "Run a scan"
     Write-Host ""
     Write-Host "Configure API Keys:" -ForegroundColor Magenta
     Write-Host '  $env:SHODAN_API_KEY="your-key"' -ForegroundColor Cyan
-    Write-Host "  Or edit: $env:USERPROFILE\.lotus_secrets.json" -ForegroundColor Cyan
+    Write-Host "  Or edit: $env:USERPROFILE\.atropos_secrets.json" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "NOTE: You may need to restart your terminal for PATH changes." -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "🪷 Happy Hunting!" -ForegroundColor Magenta
+    Write-Host "⚔️ Happy Hunting!" -ForegroundColor Magenta
     Write-Host ""
 }
 
@@ -279,7 +279,7 @@ try {
     Install-BuildTools
     Install-Rust
     Install-LuaJIT
-    Install-Lotus
+    Install-Atropos
     Setup-Secrets
     Install-OSINTTools
     Print-Complete

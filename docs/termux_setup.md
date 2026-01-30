@@ -1,6 +1,6 @@
-# 📱 Lotus on Android (Termux + proot-distro Ubuntu)
+# 📱 Atropos on Android (Termux + proot-distro Ubuntu)
 
-Complete setup guide for running Lotus on Android without root access.
+Complete setup guide for running Atropos on Android without root access.
 
 ## Prerequisites
 
@@ -57,22 +57,22 @@ source "$HOME/.cargo/env"
 rustc --version
 ```
 
-### Step 3: Install Lotus
+### Step 3: Install Atropos
 
 ```bash
 # Clone and build
-git clone https://github.com/BugBlocker/lotus.git
-cd lotus
+git clone https://github.com/BugBlocker/atropos.git
+cd atropos
 cargo build --release
 
 # Add to PATH
 mkdir -p ~/.local/bin
-cp target/release/lotus ~/.local/bin/
+cp target/release/atropos ~/.local/bin/
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # Verify
-lotus --version
+atropos --version
 ```
 
 ### Step 4: Install OSINT Tools (Optional)
@@ -185,7 +185,7 @@ alias gp='git pull'
 alias gc='git commit'
 alias gd='git diff'
 alias ubuntu='proot-distro login ubuntu'
-alias lotus-ui='proot-distro login ubuntu -- lotus serve'
+alias atropos-ui='proot-distro login ubuntu -- atropos serve'
 
 # PATH
 export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
@@ -195,17 +195,17 @@ source ~/.bashrc
 
 ### Quick Access Script
 
-Create `~/lotus-start.sh`:
+Create `~/atropos-start.sh`:
 ```bash
-cat > ~/lotus-start.sh << 'EOF'
+cat > ~/atropos-start.sh << 'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
-echo "🪷 Starting Lotus OSINT Platform..."
-proot-distro login ubuntu -- bash -c "cd ~/lotus && lotus serve --host 0.0.0.0 --port 8080"
+echo "⚔️ Starting Atropos OSINT Platform..."
+proot-distro login ubuntu -- bash -c "cd ~/atropos && atropos serve --host 0.0.0.0 --port 8080"
 EOF
-chmod +x ~/lotus-start.sh
+chmod +x ~/atropos-start.sh
 ```
 
-Now just run: `~/lotus-start.sh`
+Now just run: `~/atropos-start.sh`
 
 ---
 
@@ -213,7 +213,7 @@ Now just run: `~/lotus-start.sh`
 
 ### From Same Device
 
-1. Start Lotus: `lotus serve`
+1. Start Atropos: `atropos serve`
 2. Open browser: `http://localhost:8080`
 
 ### From Another Device (LAN)
@@ -223,7 +223,7 @@ Now just run: `~/lotus-start.sh`
 ip addr | grep inet
 
 # Start with host binding
-lotus serve --host 0.0.0.0 --port 8080
+atropos serve --host 0.0.0.0 --port 8080
 
 # Access from other device: http://YOUR_PHONE_IP:8080
 ```
@@ -236,13 +236,13 @@ pkg install termux-widget
 
 # Create shortcut script
 mkdir -p ~/.shortcuts
-cat > ~/.shortcuts/Lotus << 'EOF'
+cat > ~/.shortcuts/Atropos << 'EOF'
 #!/data/data/com.termux/files/usr/bin/bash
-proot-distro login ubuntu -- lotus serve
+proot-distro login ubuntu -- atropos serve
 EOF
-chmod +x ~/.shortcuts/Lotus
+chmod +x ~/.shortcuts/Atropos
 
-# Add widget to home screen, select "Lotus"
+# Add widget to home screen, select "Atropos"
 ```
 
 ---
@@ -256,7 +256,7 @@ chmod +x ~/.shortcuts/Lotus
 proot-distro login ubuntu
 
 # Navigate to project
-cd ~/lotus
+cd ~/atropos
 
 # Check status
 git status
@@ -377,24 +377,24 @@ update-ca-certificates
 ```bash
 # In proot, you're technically root but sandboxed
 # Files from Termux shared storage need fixing:
-chmod -R 755 ~/lotus
+chmod -R 755 ~/atropos
 ```
 
 ### Slow git clone
 
 ```bash
 # Shallow clone (faster)
-git clone --depth 1 https://github.com/BugBlocker/lotus.git
+git clone --depth 1 https://github.com/BugBlocker/atropos.git
 
 # Or use SSH (sometimes faster)
-git clone git@github.com:BugBlocker/lotus.git
+git clone git@github.com:BugBlocker/atropos.git
 ```
 
 ### Can't access localhost from browser
 
 ```bash
 # Make sure you're binding to all interfaces
-lotus serve --host 0.0.0.0 --port 8080
+atropos serve --host 0.0.0.0 --port 8080
 
 # Check if port is in use
 ss -tlnp | grep 8080
@@ -407,11 +407,11 @@ ss -tlnp | grep 8080
 Save this and run it:
 
 ```bash
-cat > ~/setup_lotus.sh << 'SCRIPT'
+cat > ~/setup_atropos.sh << 'SCRIPT'
 #!/bin/bash
 set -e
 
-echo "🪷 Lotus OSINT Platform - Termux Setup"
+echo "⚔️ Atropos OSINT Platform - Termux Setup"
 echo "======================================="
 
 # Colors
@@ -430,19 +430,19 @@ if ! command -v rustc &> /dev/null; then
     source "$HOME/.cargo/env"
 fi
 
-echo -e "${CYAN}[3/5] Cloning Lotus...${NC}"
+echo -e "${CYAN}[3/5] Cloning Atropos...${NC}"
 cd ~
-if [ ! -d "lotus" ]; then
-    git clone --depth 1 https://github.com/BugBlocker/lotus.git
+if [ ! -d "atropos" ]; then
+    git clone --depth 1 https://github.com/BugBlocker/atropos.git
 fi
-cd lotus
+cd atropos
 
 echo -e "${CYAN}[4/5] Building (this takes a while)...${NC}"
 CARGO_BUILD_JOBS=2 cargo build --release
 
 echo -e "${CYAN}[5/5] Installing...${NC}"
 mkdir -p ~/.local/bin
-cp target/release/lotus ~/.local/bin/
+cp target/release/atropos ~/.local/bin/
 
 # Update PATH
 grep -q 'local/bin' ~/.bashrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
@@ -451,19 +451,19 @@ echo -e "${GREEN}"
 echo "✅ Setup complete!"
 echo ""
 echo "Commands:"
-echo "  lotus --help     Show help"
-echo "  lotus serve      Start web UI"
-echo "  lotus scan       Run scans"
+echo "  atropos --help     Show help"
+echo "  atropos serve      Start web UI"
+echo "  atropos scan       Run scans"
 echo ""
 echo "Web UI: http://localhost:8080"
 echo -e "${NC}"
 SCRIPT
-chmod +x ~/setup_lotus.sh
+chmod +x ~/setup_atropos.sh
 ```
 
 Then in proot Ubuntu:
 ```bash
-~/setup_lotus.sh
+~/setup_atropos.sh
 ```
 
 ---
@@ -480,14 +480,14 @@ proot-distro login ubuntu
 apt update && apt install -y build-essential libssl-dev pkg-config libluajit-5.1-dev git curl && \
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
 source "$HOME/.cargo/env" && \
-git clone --depth 1 https://github.com/BugBlocker/lotus.git && \
-cd lotus && \
+git clone --depth 1 https://github.com/BugBlocker/atropos.git && \
+cd atropos && \
 CARGO_BUILD_JOBS=2 cargo build --release && \
 mkdir -p ~/.local/bin && \
-cp target/release/lotus ~/.local/bin/ && \
+cp target/release/atropos ~/.local/bin/ && \
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && \
 source ~/.bashrc && \
-lotus --version
+atropos --version
 ```
 
 **For Git: Use `gh` (GitHub CLI) - it's the easiest on mobile!**

@@ -1,5 +1,5 @@
 # ============================================
-# Lotus OSINT Platform - Production Dockerfile
+# Atropos OSINT Platform - Production Dockerfile
 # ============================================
 
 # Build stage
@@ -53,8 +53,8 @@ RUN go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && \
     go install github.com/projectdiscovery/httpx/cmd/httpx@latest && \
     go install github.com/gitleaks/gitleaks/v8@latest
 
-# Copy Lotus binary
-COPY --from=builder /app/target/release/lotus /usr/local/bin/lotus
+# Copy Atropos binary
+COPY --from=builder /app/target/release/atropos /usr/local/bin/atropos
 
 # Copy example scripts and static files
 COPY examples /app/examples
@@ -74,4 +74,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
 # Start web UI on PORT
-CMD lotus serve --host 0.0.0.0 --port ${PORT}
+CMD atropos serve --host 0.0.0.0 --port ${PORT}

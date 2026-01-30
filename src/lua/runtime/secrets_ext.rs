@@ -143,21 +143,21 @@ impl SecretsManager {
     fn load_from_default_config(&mut self) {
         let mut config_paths: Vec<PathBuf> = vec![
             // Current directory
-            PathBuf::from(".lotus_secrets"),
-            PathBuf::from(".lotus_secrets.json"),
-            PathBuf::from("lotus_secrets.json"),
+            PathBuf::from(".atropos_secrets"),
+            PathBuf::from(".atropos_secrets.json"),
+            PathBuf::from("atropos_secrets.json"),
         ];
         
         // Home directory paths
         if let Some(home) = dirs_next::home_dir() {
-            config_paths.push(home.join(".lotus_secrets"));
-            config_paths.push(home.join(".lotus_secrets.json"));
-            config_paths.push(home.join(".config/lotus/secrets.json"));
+            config_paths.push(home.join(".atropos_secrets"));
+            config_paths.push(home.join(".atropos_secrets.json"));
+            config_paths.push(home.join(".config/atropos/secrets.json"));
         }
         
         // XDG config
         if let Some(config) = dirs_next::config_dir() {
-            config_paths.push(config.join("lotus/secrets.json"));
+            config_paths.push(config.join("atropos/secrets.json"));
         }
         
         for path in config_paths {
@@ -239,7 +239,7 @@ impl UserData for SecretsManager {
         methods.add_method("save", |_, this, path: Option<String>| {
             let save_path = path.map(PathBuf::from)
                 .or_else(|| this.config_path.clone())
-                .unwrap_or_else(|| PathBuf::from(".lotus_secrets.json"));
+                .unwrap_or_else(|| PathBuf::from(".atropos_secrets.json"));
             
             let json = serde_json::to_string_pretty(&this.secrets)
                 .map_err(|e| mlua::Error::RuntimeError(format!("JSON error: {}", e)))?;

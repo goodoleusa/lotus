@@ -1,6 +1,6 @@
 # OSINT & Threat Intelligence Integration Guide
 
-Lotus provides comprehensive integration with popular OSINT (Open Source Intelligence) and threat intelligence tools, allowing you to build powerful reconnaissance and threat detection scripts.
+Atropos provides comprehensive integration with popular OSINT (Open Source Intelligence) and threat intelligence tools, allowing you to build powerful reconnaissance and threat detection scripts.
 
 ## Table of Contents
 
@@ -26,7 +26,7 @@ Lotus provides comprehensive integration with popular OSINT (Open Source Intelli
 
 ## Secrets Management
 
-Lotus provides a centralized secrets manager for API keys that automatically loads from environment variables and config files.
+Atropos provides a centralized secrets manager for API keys that automatically loads from environment variables and config files.
 
 ### Quick Setup
 
@@ -37,7 +37,7 @@ export VIRUSTOTAL_API_KEY="your-key"
 export GITHUB_TOKEN="your-token"
 ```
 
-**Option 2: Config File** (`.lotus_secrets.json` in current dir or `~/.lotus_secrets.json`)
+**Option 2: Config File** (`.atropos_secrets.json` in current dir or `~/.atropos_secrets.json`)
 ```json
 {
     "shodan": "your-shodan-api-key",
@@ -47,7 +47,7 @@ export GITHUB_TOKEN="your-token"
 }
 ```
 
-**Option 3: KEY=VALUE File** (`.lotus_secrets`)
+**Option 3: KEY=VALUE File** (`.atropos_secrets`)
 ```
 shodan=your-shodan-api-key
 virustotal=your-virustotal-api-key
@@ -187,7 +187,7 @@ end
 ### Running the Script
 
 ```bash
-echo "example.com" | lotus scan osint_script.lua
+echo "example.com" | atropos scan osint_script.lua
 ```
 
 ---
@@ -621,7 +621,7 @@ function main()
     -- Save report
     write_json(CONFIG.output_dir .. "/" .. target .. "_report.json", results)
     
-    -- Add to Lotus reports
+    -- Add to Atropos reports
     Reports:add{
         name = "OSINT Scan",
         target = target,
@@ -667,35 +667,35 @@ end
 
 ```bash
 # Simple subdomain enumeration
-echo "example.com" | lotus scan examples/amass_osint.lua
+echo "example.com" | atropos scan examples/amass_osint.lua
 
 # Full BBOT scan
-echo "example.com" | lotus scan examples/bbot_scanner.lua --env PRESET=full
+echo "example.com" | atropos scan examples/bbot_scanner.lua --env PRESET=full
 
 # Web reconnaissance with FinalRecon
-echo "https://example.com" | lotus scan examples/finalrecon_scanner.lua
+echo "https://example.com" | atropos scan examples/finalrecon_scanner.lua
 ```
 
 ### Threat Intelligence Workflow
 
 ```bash
 # Comprehensive threat intel scan
-echo "example.com" | lotus scan examples/threat_intel_scanner.lua
+echo "example.com" | atropos scan examples/threat_intel_scanner.lua
 
 # With API keys
 export SHODAN_API_KEY="your-key"
 export VIRUSTOTAL_API_KEY="your-key"
-echo "example.com" | lotus scan examples/threat_intel_scanner.lua
+echo "example.com" | atropos scan examples/threat_intel_scanner.lua
 ```
 
 ### Batch Scanning
 
 ```bash
 # Scan multiple domains
-cat domains.txt | lotus scan examples/bbot_scanner.lua --workers 5
+cat domains.txt | atropos scan examples/bbot_scanner.lua --workers 5
 
 # With custom output
-cat domains.txt | lotus scan examples/threat_intel_scanner.lua -o results.json
+cat domains.txt | atropos scan examples/threat_intel_scanner.lua -o results.json
 ```
 
 ---

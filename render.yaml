@@ -1,15 +1,15 @@
 # ============================================
-# Render Blueprint - Lotus OSINT Platform
+# Render Blueprint - Atropos OSINT Platform
 # ============================================
-# Deploy: https://render.com/deploy?repo=https://github.com/YOUR_USER/lotus
+# Deploy: https://render.com/deploy?repo=https://github.com/YOUR_USER/atropos
 # Or: Dashboard → New → Blueprint → Connect Repo
 
 services:
   - type: web
-    name: lotus-osint
+    name: atropos-osint
     runtime: docker
     dockerfilePath: ./Dockerfile
-    dockerCommand: lotus serve --host 0.0.0.0 --port 10000
+    dockerCommand: atropos serve --host 0.0.0.0 --port 10000
     
     # Health check
     healthCheckPath: /api/health

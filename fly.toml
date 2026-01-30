@@ -1,7 +1,7 @@
 # Fly.io Configuration
 # Deploy: flyctl launch --copy-config && flyctl deploy
 
-app = "lotus-osint"
+app = "atropos-osint"
 primary_region = "iad"
 
 [build]

@@ -111,7 +111,7 @@ pub async fn start_server(host: &str, port: u16) {
         .expect("Invalid address");
     
     println!("╔══════════════════════════════════════════════════════════════╗");
-    println!("║                    LOTUS OSINT PLATFORM                      ║");
+    println!("║            ⚔️  ATROPOS • THE THREAD CUTTER                   ║");
     println!("╠══════════════════════════════════════════════════════════════╣");
     println!("║  Web UI:  http://{}:{}                              ║", host, port);
     println!("║  API:     http://{}:{}/api                          ║", host, port);
@@ -127,6 +127,7 @@ async fn health_check() -> impl IntoResponse {
     Json(serde_json::json!({
         "status": "ok",
         "version": env!("CARGO_PKG_VERSION"),
-        "name": "Lotus OSINT Platform"
+        "name": "Atropos",
+        "tagline": "The Thread Cutter"
     }))
 }

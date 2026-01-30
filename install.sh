@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# Lotus OSINT Platform - Installation Script
+# Atropos OSINT Platform - Installation Script
 # ============================================
 
 set -e
@@ -29,7 +29,7 @@ EOF
 echo -e "${NC}"
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${YELLOW}Welcome to the Lotus Installation Script${NC}"
+echo -e "${YELLOW}Welcome to the Atropos Installation Script${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo
 
@@ -158,35 +158,35 @@ install_rust() {
     fi
 }
 
-# Install Lotus
-install_lotus() {
-    echo -e "\n${CYAN}[3/5] Installing Lotus...${NC}"
+# Install Atropos
+install_atropos() {
+    echo -e "\n${CYAN}[3/5] Installing Atropos...${NC}"
     
-    if [ -d "lotus" ]; then
-        echo -e "${YELLOW}Updating existing Lotus installation...${NC}"
-        cd lotus
+    if [ -d "atropos" ]; then
+        echo -e "${YELLOW}Updating existing Atropos installation...${NC}"
+        cd atropos
         git pull origin master
     else
-        echo -e "${YELLOW}Cloning Lotus repository...${NC}"
-        git clone https://github.com/BugBlocker/lotus.git
-        cd lotus
+        echo -e "${YELLOW}Cloning Atropos repository...${NC}"
+        git clone https://github.com/BugBlocker/atropos.git
+        cd atropos
     fi
     
-    echo -e "${YELLOW}Building Lotus (this may take a few minutes)...${NC}"
+    echo -e "${YELLOW}Building Atropos (this may take a few minutes)...${NC}"
     cargo build --release
     
     # Install binary
     if [ -w "/usr/local/bin" ]; then
-        sudo cp target/release/lotus /usr/local/bin/
+        sudo cp target/release/atropos /usr/local/bin/
     else
         mkdir -p "$HOME/.local/bin"
-        cp target/release/lotus "$HOME/.local/bin/"
-        echo -e "${YELLOW}Added lotus to ~/.local/bin${NC}"
+        cp target/release/atropos "$HOME/.local/bin/"
+        echo -e "${YELLOW}Added atropos to ~/.local/bin${NC}"
         echo -e "${YELLOW}Make sure ~/.local/bin is in your PATH${NC}"
     fi
     
     cd ..
-    echo -e "${GREEN}✓ Lotus installed${NC}"
+    echo -e "${GREEN}✓ Atropos installed${NC}"
 }
 
 # Install OSINT tools
@@ -221,11 +221,11 @@ install_osint_tools() {
 setup_secrets() {
     echo -e "\n${CYAN}[5/5] Setting up secrets configuration...${NC}"
     
-    CONFIG_DIR="$HOME/.config/lotus"
+    CONFIG_DIR="$HOME/.config/atropos"
     mkdir -p "$CONFIG_DIR"
     
-    if [ ! -f "$HOME/.lotus_secrets.json" ]; then
-        cat > "$HOME/.lotus_secrets.json" << 'SECRETS'
+    if [ ! -f "$HOME/.atropos_secrets.json" ]; then
+        cat > "$HOME/.atropos_secrets.json" << 'SECRETS'
 {
     "shodan": "",
     "virustotal": "",
@@ -238,8 +238,8 @@ setup_secrets() {
     "otx": ""
 }
 SECRETS
-        chmod 600 "$HOME/.lotus_secrets.json"
-        echo -e "${GREEN}✓ Created ~/.lotus_secrets.json template${NC}"
+        chmod 600 "$HOME/.atropos_secrets.json"
+        echo -e "${GREEN}✓ Created ~/.atropos_secrets.json template${NC}"
         echo -e "${YELLOW}  Edit this file to add your API keys${NC}"
     else
         echo -e "${GREEN}✓ Secrets file already exists${NC}"
@@ -254,18 +254,18 @@ print_complete() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo
     echo -e "${PURPLE}Quick Start:${NC}"
-    echo -e "  ${CYAN}lotus --help${NC}              Show help"
-    echo -e "  ${CYAN}lotus serve${NC}               Start web UI"
-    echo -e "  ${CYAN}lotus scan script.lua${NC}     Run a scan"
+    echo -e "  ${CYAN}atropos --help${NC}              Show help"
+    echo -e "  ${CYAN}atropos serve${NC}               Start web UI"
+    echo -e "  ${CYAN}atropos scan script.lua${NC}     Run a scan"
     echo
     echo -e "${PURPLE}Configure API Keys:${NC}"
     echo -e "  ${CYAN}export SHODAN_API_KEY=\"your-key\"${NC}"
-    echo -e "  Or edit: ${CYAN}~/.lotus_secrets.json${NC}"
+    echo -e "  Or edit: ${CYAN}~/.atropos_secrets.json${NC}"
     echo
     echo -e "${PURPLE}Documentation:${NC}"
-    echo -e "  ${CYAN}https://github.com/BugBlocker/lotus${NC}"
+    echo -e "  ${CYAN}https://github.com/BugBlocker/atropos${NC}"
     echo
-    echo -e "${PINK}🪷 Happy Hunting!${NC}"
+    echo -e "${PINK}⚔️ Happy Hunting!${NC}"
     echo
 }
 
@@ -273,7 +273,7 @@ print_complete() {
 main() {
     install_deps
     install_rust
-    install_lotus
+    install_atropos
     install_osint_tools
     setup_secrets
     print_complete

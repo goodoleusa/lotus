@@ -1,11 +1,11 @@
 [package]
-name = "lotus"
-version = "0.6.0"
+name = "atropos"
+version = "1.0.0"
 edition = "2021"
 license = "GPLv2"
-keywords = ["security", "automation", "bugbounty"]
+keywords = ["security", "osint", "reconnaissance", "automation", "threat-intelligence"]
 categories = ["command-line-utilities"]
-description = "Fast Web Security Scanner written in Rust based on Lua Scripts"
+description = "OSINT & Threat Intelligence Platform - The Thread Cutter"
 authors = ["Khaled Nassar <knassar702@gmail.com>"]
 readme = "README.md"
 
@@ -19,7 +19,7 @@ luajit = ["tealr/mlua_luajit"]
 vendored = ["tealr/mlua_vendored"]
 
 [[bin]]
-name = "lotus"
+name = "atropos"
 path = "src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

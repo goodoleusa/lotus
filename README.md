@@ -1,11 +1,16 @@
 <p align="center">
-<img src="https://raw.githubusercontent.com/BugBlocker/lotus/master/logo/lotus_logo.png" width="370px" alt="Lotus Logo">
+<img src="https://raw.githubusercontent.com/BugBlocker/atropos/master/logo/atropos_logo.png" width="370px" alt="Atropos Logo">
 </p>
 
-<h1 align="center">Lotus OSINT & Security Platform</h1>
+<h1 align="center">⚔️ ATROPOS</h1>
+<h3 align="center">The Thread Cutter • OSINT & Security Platform</h3>
 
 <p align="center">
-<strong>A powerful security automation framework for OSINT, reconnaissance, and vulnerability scanning</strong>
+<em>"She who cannot be turned" — The Fate who cuts the thread of life</em>
+</p>
+
+<p align="center">
+<strong>Weave intelligence. Measure threats. Cut through the noise.</strong>
 </p>
 
 <p align="center">
@@ -19,9 +24,9 @@
 
 ---
 
-## 🌸 What is Lotus?
+## 🔱 What is Atropos?
 
-**Lotus** is an advanced security automation platform that combines:
+**Atropos** is an advanced security automation platform that combines:
 
 - 🔍 **OSINT & Reconnaissance** - Integrated with 14+ security tools
 - 🌐 **Web Vulnerability Scanning** - XSS, SQLi, SSTI, and more
@@ -52,19 +57,19 @@ gitleaks:scan({ path = "./repo", report = "secrets.json" })
 ### Linux / macOS
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/BugBlocker/atropos/master/install.sh | bash
 ```
 
 ### Windows (PowerShell as Admin)
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/BugBlocker/lotus/master/install.ps1'))
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/BugBlocker/atropos/master/install.ps1'))
 ```
 
 ### Using Cargo
 
 ```bash
-cargo install --git https://github.com/BugBlocker/lotus
+cargo install --git https://github.com/BugBlocker/atropos
 ```
 
 <details>
@@ -74,25 +79,25 @@ cargo install --git https://github.com/BugBlocker/lotus
 ```bash
 sudo apt update
 sudo apt install -y build-essential libssl-dev pkg-config libluajit-5.1-dev git curl
-cargo install --git https://github.com/BugBlocker/lotus
+cargo install --git https://github.com/BugBlocker/atropos
 ```
 
 #### Fedora / RHEL
 ```bash
 sudo dnf install -y gcc openssl-devel pkgconfig luajit-devel git curl
-cargo install --git https://github.com/BugBlocker/lotus
+cargo install --git https://github.com/BugBlocker/atropos
 ```
 
 #### Arch Linux
 ```bash
 sudo pacman -S base-devel openssl pkgconf luajit git curl
-cargo install --git https://github.com/BugBlocker/lotus
+cargo install --git https://github.com/BugBlocker/atropos
 ```
 
 #### macOS
 ```bash
 brew install openssl luajit pkg-config
-cargo install --git https://github.com/BugBlocker/lotus
+cargo install --git https://github.com/BugBlocker/atropos
 ```
 
 #### Windows (Native)
@@ -100,15 +105,15 @@ cargo install --git https://github.com/BugBlocker/lotus
 # Install Chocolatey, then:
 choco install git rustup visualstudio2022buildtools -y
 rustup-init -y
-git clone https://github.com/BugBlocker/lotus.git
+git clone https://github.com/BugBlocker/atropos.git
 cd lotus
 cargo build --release --features vendored
 ```
 
 #### Docker
 ```bash
-docker build -t lotus-osint .
-docker run -it lotus-osint scan --help
+docker build -t atropos-osint .
+docker run -it atropos-osint scan --help
 ```
 
 </details>
@@ -119,9 +124,9 @@ See [INSTALL.md](INSTALL.md) for detailed installation instructions.
 
 | Platform | Deploy | Free Tier |
 |----------|--------|-----------|
-| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/lotus) | $5/mo credit |
-| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BugBlocker/lotus) | 750 hrs/mo |
-| **GitHub Codespaces** | [![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/BugBlocker/lotus) | 60 hrs/mo |
+| **Railway** | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/atropos) | $5/mo credit |
+| **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BugBlocker/atropos) | 750 hrs/mo |
+| **GitHub Codespaces** | [![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/BugBlocker/atropos) | 60 hrs/mo |
 
 <details>
 <summary><b>🚀 Manual Cloud Deployment</b></summary>
@@ -157,7 +162,7 @@ flyctl deploy
 #### GitHub Codespaces (Instant Dev Environment)
 1. Click "Code" → "Codespaces" → "Create codespace"
 2. Wait ~2 min for setup
-3. Run `lotus serve` - UI opens automatically!
+3. Run `atropos serve` - UI opens automatically!
 
 </details>
 
@@ -229,19 +234,19 @@ export VIRUSTOTAL_API_KEY="your-key"
 Launch the vaporwave-themed web interface:
 
 ```bash
-lotus serve
+atropos serve
 # Open http://localhost:8080
 ```
 
 ```bash
 # Custom port
-lotus serve --port 3000
+atropos serve --port 3000
 
 # Open browser automatically
-lotus serve --open
+atropos serve --open
 
 # Bind to all interfaces
-lotus serve --host 0.0.0.0
+atropos serve --host 0.0.0.0
 ```
 
 **Features:**
@@ -260,26 +265,26 @@ lotus serve --host 0.0.0.0
 
 ```bash
 # Scan with a script
-echo "example.com" | lotus scan examples/bbot_scanner.lua
+echo "example.com" | atropos scan examples/bbot_scanner.lua
 
 # Scan with output file
-echo "example.com" | lotus scan examples/threat_intel_scanner.lua -o results.json
+echo "example.com" | atropos scan examples/threat_intel_scanner.lua -o results.json
 
 # Multiple targets
-cat targets.txt | lotus scan examples/amass_osint.lua -w 20
+cat targets.txt | atropos scan examples/amass_osint.lua -w 20
 
 # With proxy (for Burp/ZAP)
-echo "https://target.com" | lotus scan script.lua -p http://127.0.0.1:8080
+echo "https://target.com" | atropos scan script.lua -p http://127.0.0.1:8080
 ```
 
 ### Create New Scripts
 
 ```bash
 # Create host scanner template (OSINT)
-lotus new --type 1 -o my_osint.lua
+atropos new --type 1 -o my_osint.lua
 
 # Create URL scanner template (Web vuln)
-lotus new --type 2 -o my_scanner.lua
+atropos new --type 2 -o my_scanner.lua
 ```
 
 ### Example Scripts
@@ -426,14 +431,14 @@ jobs:
       
       - name: Install Lotus
         run: |
-          curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
+          curl -sSL https://raw.githubusercontent.com/BugBlocker/atropos/master/install.sh | bash
           
       - name: Run OSINT Scan
         env:
           SHODAN_API_KEY: ${{ secrets.SHODAN_API_KEY }}
           VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
         run: |
-          echo "${{ vars.TARGET_DOMAIN }}" | lotus scan examples/threat_intel_scanner.lua -o results.json
+          echo "${{ vars.TARGET_DOMAIN }}" | atropos scan examples/threat_intel_scanner.lua -o results.json
           
       - name: Upload Results
         uses: actions/upload-artifact@v4
@@ -461,7 +466,7 @@ jobs:
           fetch-depth: 0
           
       - name: Install Lotus
-        run: curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
+        run: curl -sSL https://raw.githubusercontent.com/BugBlocker/atropos/master/install.sh | bash
         
       - name: Install Gitleaks
         run: go install github.com/gitleaks/gitleaks/v8@latest
@@ -479,7 +484,7 @@ jobs:
               end
           end
           EOF
-          echo "." | lotus scan secret_scan.lua
+          echo "." | atropos scan secret_scan.lua
 ```
 
 ### GitHub Actions: Subdomain Monitoring
@@ -501,12 +506,12 @@ jobs:
       
       - name: Setup
         run: |
-          curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
+          curl -sSL https://raw.githubusercontent.com/BugBlocker/atropos/master/install.sh | bash
           pip install bbot
           
       - name: Enumerate Subdomains
         run: |
-          echo "${{ vars.TARGET_DOMAIN }}" | lotus scan examples/bbot_scanner.lua -o new_subs.json
+          echo "${{ vars.TARGET_DOMAIN }}" | atropos scan examples/bbot_scanner.lua -o new_subs.json
           
       - name: Compare with Previous
         run: |
@@ -541,10 +546,10 @@ vulnerability_scan:
   image: rust:latest
   before_script:
     - apt-get update && apt-get install -y libssl-dev pkg-config libluajit-5.1-dev
-    - cargo install --git https://github.com/BugBlocker/lotus
+    - cargo install --git https://github.com/BugBlocker/atropos
     - go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
   script:
-    - echo "$TARGET_URL" | lotus scan examples/nuclei_scanner.lua -o vulns.json
+    - echo "$TARGET_URL" | atropos scan examples/nuclei_scanner.lua -o vulns.json
   artifacts:
     paths:
       - vulns.json
@@ -571,7 +576,7 @@ services:
       - ./targets.txt:/app/targets.txt
     command: >
       sh -c "while true; do
-        cat /app/targets.txt | lotus scan /app/scripts/monitor.lua -o /app/results/scan_$(date +%Y%m%d_%H%M%S).json;
+        cat /app/targets.txt | atropos scan /app/scripts/monitor.lua -o /app/results/scan_$(date +%Y%m%d_%H%M%S).json;
         sleep 3600;
       done"
 
@@ -606,7 +611,7 @@ echo "[*] Starting recon for $TARGET"
 
 # Step 1: Subdomain enumeration
 echo "[1/4] Subdomain enumeration..."
-echo "$TARGET" | lotus scan examples/bbot_scanner.lua -o "$OUTPUT_DIR/subdomains.json"
+echo "$TARGET" | atropos scan examples/bbot_scanner.lua -o "$OUTPUT_DIR/subdomains.json"
 
 # Step 2: HTTP probing
 echo "[2/4] HTTP probing..."
@@ -614,11 +619,11 @@ cat "$OUTPUT_DIR/subdomains.json" | jq -r '.host' | httpx -silent -o "$OUTPUT_DI
 
 # Step 3: Vulnerability scan
 echo "[3/4] Vulnerability scanning..."
-cat "$OUTPUT_DIR/live_hosts.txt" | lotus scan examples/nuclei_scanner.lua -o "$OUTPUT_DIR/vulns.json" -w 10
+cat "$OUTPUT_DIR/live_hosts.txt" | atropos scan examples/nuclei_scanner.lua -o "$OUTPUT_DIR/vulns.json" -w 10
 
 # Step 4: Threat intelligence
 echo "[4/4] Threat intelligence..."
-echo "$TARGET" | lotus scan examples/threat_intel_scanner.lua -o "$OUTPUT_DIR/intel.json"
+echo "$TARGET" | atropos scan examples/threat_intel_scanner.lua -o "$OUTPUT_DIR/intel.json"
 
 echo "[+] Recon complete! Results in $OUTPUT_DIR"
 ```
@@ -640,11 +645,11 @@ Write-Host "[*] Starting recon for $Target" -ForegroundColor Cyan
 
 # Subdomain enumeration
 Write-Host "[1/3] Subdomain enumeration..." -ForegroundColor Yellow
-$Target | lotus scan examples/bbot_scanner.lua -o "$OutputDir\subdomains.json"
+$Target | atropos scan examples/bbot_scanner.lua -o "$OutputDir\subdomains.json"
 
 # Vulnerability scan
 Write-Host "[2/3] Vulnerability scanning..." -ForegroundColor Yellow
-$Target | lotus scan examples/nuclei_scanner.lua -o "$OutputDir\vulns.json"
+$Target | atropos scan examples/nuclei_scanner.lua -o "$OutputDir\vulns.json"
 
 # Generate report
 Write-Host "[3/3] Generating report..." -ForegroundColor Yellow
@@ -671,13 +676,13 @@ Write-Host "[+] Recon complete! Results in $OutputDir" -ForegroundColor Green
 # Add to crontab: crontab -e
 
 # Daily full scan at 2 AM
-0 2 * * * /usr/local/bin/lotus scan /opt/lotus/scripts/daily_scan.lua -o /var/log/lotus/daily_$(date +\%Y\%m\%d).json 2>&1
+0 2 * * * /usr/local/bin/atropos scan /opt/atropos/scripts/daily_scan.lua -o /var/log/atropos/daily_$(date +\%Y\%m\%d).json 2>&1
 
 # Hourly quick check
-0 * * * * echo "critical-asset.com" | /usr/local/bin/lotus scan /opt/lotus/scripts/quick_check.lua >> /var/log/lotus/hourly.log 2>&1
+0 * * * * echo "critical-asset.com" | /usr/local/bin/atropos scan /opt/atropos/scripts/quick_check.lua >> /var/log/atropos/hourly.log 2>&1
 
 # Weekly comprehensive report
-0 3 * * 0 /opt/lotus/scripts/weekly_report.sh >> /var/log/lotus/weekly.log 2>&1
+0 3 * * 0 /opt/atropos/scripts/weekly_report.sh >> /var/log/atropos/weekly.log 2>&1
 ```
 
 ### Lua: Custom Multi-Stage Workflow
@@ -761,7 +766,7 @@ end
 | [docs/osint_integration.md](docs/osint_integration.md) | OSINT tools guide |
 | [examples/](examples/) | Example scripts |
 
-**Online Docs:** https://lotus.knas.me
+**Online Docs:** https://atropos.knas.me
 
 ---
 
@@ -769,7 +774,7 @@ end
 
 We welcome contributions! Here's how you can help:
 
-1. 🐛 Report bugs via [GitHub Issues](https://github.com/BugBlocker/lotus/issues)
+1. 🐛 Report bugs via [GitHub Issues](https://github.com/BugBlocker/atropos/issues)
 2. 💡 Suggest features or improvements
 3. 🔧 Submit pull requests
 4. 📜 Write example scripts
@@ -781,7 +786,7 @@ Join our [Discord](https://discord.gg/nBYDPTzjSq) community!
 
 ## 📜 License
 
-Lotus is released under the [GPL v2 License](LICENSE).
+Atropos is released under the [GPL v2 License](LICENSE).
 
 ---
 

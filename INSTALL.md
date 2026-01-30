@@ -1,4 +1,4 @@
-# 🪷 Lotus OSINT Platform - Installation Guide
+# ⚔️ Atropos OSINT Platform - Installation Guide
 
 ```
 ██╗      ██████╗ ████████╗██╗   ██╗███████╗
@@ -27,14 +27,14 @@
 ### One-Line Install (Linux/macOS)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/BugBlocker/lotus/master/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/BugBlocker/atropos/master/install.sh | bash
 ```
 
 ### One-Line Install (Windows PowerShell)
 
 Run as Administrator:
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/BugBlocker/lotus/master/install.ps1'))
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/BugBlocker/atropos/master/install.ps1'))
 ```
 
 ### Manual Quick Install
@@ -51,11 +51,11 @@ sudo apt install -y libssl-dev pkg-config libluajit-5.1-dev
 # macOS:
 brew install openssl luajit pkg-config
 
-# 3. Install Lotus
-cargo install --git https://github.com/BugBlocker/lotus
+# 3. Install Atropos
+cargo install --git https://github.com/BugBlocker/atropos
 
 # 4. Verify installation
-lotus --help
+atropos --help
 ```
 
 ---
@@ -147,9 +147,9 @@ choco install git rustup visualstudio2022buildtools -y
 # Install Rust
 rustup-init -y
 
-# Restart terminal, then build Lotus
-git clone https://github.com/BugBlocker/lotus.git
-cd lotus
+# Restart terminal, then build Atropos
+git clone https://github.com/BugBlocker/atropos.git
+cd atropos
 cargo build --release --features vendored
 ```
 
@@ -162,9 +162,9 @@ winget install Microsoft.VisualStudio.2022.BuildTools
 
 # Configure VS Build Tools (run VS Installer and add C++ workload)
 
-# Restart terminal, then build Lotus
-git clone https://github.com/BugBlocker/lotus.git
-cd lotus
+# Restart terminal, then build Atropos
+git clone https://github.com/BugBlocker/atropos.git
+cd atropos
 cargo build --release --features vendored
 ```
 
@@ -190,8 +190,8 @@ $env:VIRUSTOTAL_API_KEY = "your-key"
 
 ```bash
 # Clone the repository
-git clone https://github.com/BugBlocker/lotus.git
-cd lotus
+git clone https://github.com/BugBlocker/atropos.git
+cd atropos
 
 # Build release version
 cargo build --release
@@ -200,20 +200,20 @@ cargo build --release
 cargo install --path .
 
 # Or copy binary manually
-sudo cp target/release/lotus /usr/local/bin/
+sudo cp target/release/atropos /usr/local/bin/
 ```
 
 ### Step 4: Verify Installation
 
 ```bash
 # Check version
-lotus --version
+atropos --version
 
 # View help
-lotus --help
+atropos --help
 
 # Run a test scan
-echo "example.com" | lotus scan examples/bbot_scanner.lua --help
+echo "example.com" | atropos scan examples/bbot_scanner.lua --help
 ```
 
 ---
@@ -224,16 +224,16 @@ echo "example.com" | lotus scan examples/bbot_scanner.lua --help
 
 ```bash
 # Build the image
-docker build -t lotus-osint .
+docker build -t atropos-osint .
 
 # Run interactive
-docker run -it --rm lotus-osint
+docker run -it --rm atropos-osint
 
 # Run with mounted scripts
 docker run -it --rm \
     -v $(pwd)/scripts:/scripts \
     -v $(pwd)/results:/results \
-    lotus-osint scan /scripts/scanner.lua -o /results/output.json
+    atropos-osint scan /scripts/scanner.lua -o /results/output.json
 ```
 
 ### Docker Compose
@@ -243,7 +243,7 @@ Create `docker-compose.yml`:
 ```yaml
 version: '3.8'
 services:
-  lotus:
+  atropos:
     build: .
     volumes:
       - ./scripts:/app/scripts
@@ -283,18 +283,18 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/lotus /usr/local/bin/
+COPY --from=builder /app/target/release/atropos /usr/local/bin/
 COPY --from=builder /app/examples /app/examples
 
 WORKDIR /app
-ENTRYPOINT ["lotus"]
+ENTRYPOINT ["atropos"]
 ```
 
 ---
 
 ## 🛠️ Installing OSINT Tools
 
-Lotus integrates with many external tools. Install the ones you need:
+Atropos integrates with many external tools. Install the ones you need:
 
 ### Core Tools (Recommended)
 
@@ -356,7 +356,7 @@ go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 go install github.com/gitleaks/gitleaks/v8@latest
 
 echo "✅ Installation complete!"
-echo "Run 'lotus scan --help' to get started"
+echo "Run 'atropos scan --help' to get started"
 ```
 
 ---
@@ -387,7 +387,7 @@ source ~/.bashrc
 
 ### Option 2: Secrets File
 
-Create `~/.lotus_secrets.json`:
+Create `~/.atropos_secrets.json`:
 
 ```json
 {
@@ -405,7 +405,7 @@ Create `~/.lotus_secrets.json`:
 
 Set permissions:
 ```bash
-chmod 600 ~/.lotus_secrets.json
+chmod 600 ~/.atropos_secrets.json
 ```
 
 ### Option 3: .env File
@@ -439,10 +439,10 @@ GITHUB_TOKEN=your-github-token
 
 ```bash
 # Start with default port (8080)
-lotus serve
+atropos serve
 
 # Or specify a port
-lotus serve --port 3000
+atropos serve --port 3000
 ```
 
 ### Access the UI
@@ -546,20 +546,20 @@ $env:Path += ";$env:USERPROFILE\go\bin"
 #### Scan hangs or times out
 ```bash
 # Increase timeout
-lotus scan script.lua -t 60
+atropos scan script.lua -t 60
 
 # Check network connectivity
 curl -I https://example.com
 
 # Run with verbose mode
-lotus scan script.lua -v --log debug.log
+atropos scan script.lua -v --log debug.log
 ```
 
 #### Windows Defender blocks execution
 ```powershell
-# Add exclusion for Lotus directory
-Add-MpPreference -ExclusionPath "$env:USERPROFILE\.lotus"
-Add-MpPreference -ExclusionPath "$env:USERPROFILE\.cargo\bin\lotus.exe"
+# Add exclusion for Atropos directory
+Add-MpPreference -ExclusionPath "$env:USERPROFILE\.atropos"
+Add-MpPreference -ExclusionPath "$env:USERPROFILE\.cargo\bin\atropos.exe"
 ```
 
 #### PowerShell execution policy error
@@ -575,23 +575,23 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 ```bash
 # View help
-lotus --help
-lotus scan --help
+atropos --help
+atropos scan --help
 
 # Enable debug logging
-lotus scan script.lua -v --log debug.log
+atropos scan script.lua -v --log debug.log
 
 # Check tool versions
-lotus --version
+atropos --version
 amass -version
 nuclei -version
 ```
 
 ### Community Support
 
-- **GitHub Issues**: https://github.com/BugBlocker/lotus/issues
+- **GitHub Issues**: https://github.com/BugBlocker/atropos/issues
 - **Discord**: https://discord.gg/nBYDPTzjSq
-- **Documentation**: https://lotus.knas.me
+- **Documentation**: https://atropos.knas.me
 
 ---
 
@@ -599,24 +599,24 @@ nuclei -version
 
 ```bash
 # Basic scan
-echo "example.com" | lotus scan examples/bbot_scanner.lua
+echo "example.com" | atropos scan examples/bbot_scanner.lua
 
 # Scan with output file
-echo "example.com" | lotus scan examples/threat_intel_scanner.lua -o results.json
+echo "example.com" | atropos scan examples/threat_intel_scanner.lua -o results.json
 
 # Scan multiple targets
-cat targets.txt | lotus scan examples/amass_osint.lua -w 20
+cat targets.txt | atropos scan examples/amass_osint.lua -w 20
 
 # Scan with proxy
-echo "example.com" | lotus scan script.lua -p http://127.0.0.1:8080
+echo "example.com" | atropos scan script.lua -p http://127.0.0.1:8080
 
 # Pass environment variables to script
-echo "example.com" | lotus scan script.lua --env-vars '{"DEBUG":"true"}'
+echo "example.com" | atropos scan script.lua --env-vars '{"DEBUG":"true"}'
 
 # Start Web UI
-lotus serve --port 8080
+atropos serve --port 8080
 ```
 
 ---
 
-**🪷 Happy Hunting!**
+**⚔️ Happy Hunting!**

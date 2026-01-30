@@ -1,5 +1,5 @@
 {
-    "name": "Lotus OSINT Platform",
+    "name": "Atropos OSINT Platform",
     "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
     "features": {
         "ghcr.io/devcontainers/features/go:1": {},
@@ -9,7 +9,7 @@
     "forwardPorts": [8080],
     "portsAttributes": {
         "8080": {
-            "label": "Lotus Web UI",
+            "label": "Atropos Web UI",
             "onAutoForward": "openBrowser"
         }
     },

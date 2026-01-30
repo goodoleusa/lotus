@@ -12,7 +12,7 @@
 // either express or implied. See the License for the specific language governing permissions
 // and limitations under the License.
 
-use lotus::{
+use atropos::{
     cli::{
         args::Opts,
         input::load_scripts::get_scripts,
@@ -41,16 +41,16 @@ async fn main() -> Result<(), std::io::Error> {
         }
         Opts::Serve(serve_opts) => {
             println!(r#"
- ██╗      ██████╗ ████████╗██╗   ██╗███████╗
- ██║     ██╔═══██╗╚══██╔══╝██║   ██║██╔════╝
- ██║     ██║   ██║   ██║   ██║   ██║███████╗
- ██║     ██║   ██║   ██║   ██║   ██║╚════██║
- ███████╗╚██████╔╝   ██║   ╚██████╔╝███████║
- ╚══════╝ ╚═════╝    ╚═╝    ╚═════╝ ╚══════╝
-         OSINT & THREAT INTEL PLATFORM
+  █████╗ ████████╗██████╗  ██████╗ ██████╗  ██████╗ ███████╗
+ ██╔══██╗╚══██╔══╝██╔══██╗██╔═══██╗██╔══██╗██╔═══██╗██╔════╝
+ ███████║   ██║   ██████╔╝██║   ██║██████╔╝██║   ██║███████╗
+ ██╔══██║   ██║   ██╔══██╗██║   ██║██╔═══╝ ██║   ██║╚════██║
+ ██║  ██║   ██║   ██║  ██║╚██████╔╝██║     ╚██████╔╝███████║
+ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝      ╚═════╝ ╚══════╝
+        ⚔️  THE THREAD CUTTER • OSINT PLATFORM
 "#);
             let addr = format!("{}:{}", serve_opts.host, serve_opts.port);
-            println!("🪷 Starting Lotus Web UI on http://{}", addr);
+            println!("⚔️  Starting Atropos Web UI on http://{}", addr);
             println!("   Press Ctrl+C to stop the server\n");
             
             if serve_opts.open_browser {
