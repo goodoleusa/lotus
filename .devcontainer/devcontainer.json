@@ -1,0 +1,36 @@
+{
+    "name": "Lotus OSINT Platform",
+    "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
+    "features": {
+        "ghcr.io/devcontainers/features/go:1": {},
+        "ghcr.io/devcontainers/features/python:1": {}
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "forwardPorts": [8080],
+    "portsAttributes": {
+        "8080": {
+            "label": "Lotus Web UI",
+            "onAutoForward": "openBrowser"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "sumneko.lua",
+                "ms-python.python"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        },
+        "codespaces": {
+            "openFiles": ["README.md"]
+        }
+    },
+    "remoteEnv": {
+        "SHODAN_API_KEY": "${localEnv:SHODAN_API_KEY}",
+        "VIRUSTOTAL_API_KEY": "${localEnv:VIRUSTOTAL_API_KEY}",
+        "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
+    }
+}

@@ -1,7 +1,9 @@
 pub mod new;
 pub mod scan;
+pub mod serve;
 use new::NewOpts;
 use scan::UrlsOpts;
+use serve::ServeOpts;
 use structopt::StructOpt;
 
 const ABOUT: &str = r#"
@@ -84,6 +86,30 @@ SCRIPT TYPES:
   4 = CUSTOM scanner - For custom input handling
 "#;
 
+const SERVE_ABOUT: &str = r#"
+Start the Lotus web UI server.
+
+EXAMPLES:
+  # Start on default port (8080)
+  lotus serve
+
+  # Start on custom port
+  lotus serve --port 3000
+
+  # Bind to all interfaces (for network access)
+  lotus serve --host 0.0.0.0 --port 8080
+
+  # Open browser automatically
+  lotus serve --open
+
+FEATURES:
+  • Dashboard with scan statistics
+  • Launch and monitor scans
+  • Manage API keys
+  • View scan results
+  • Browse available tools and scripts
+"#;
+
 #[derive(Debug, StructOpt)]
 #[structopt(
     name = "lotus",
@@ -101,4 +127,11 @@ pub enum Opts {
         visible_alias = "s"
     )]
     Scan(UrlsOpts),
+    #[structopt(
+        name = "serve",
+        about = "Start the web UI server",
+        long_about = SERVE_ABOUT,
+        visible_alias = "ui"
+    )]
+    Serve(ServeOpts),
 }

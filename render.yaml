@@ -1,0 +1,20 @@
+# Render Blueprint - https://render.com
+# Deploy: Connect GitHub repo → Auto-detects this file
+
+services:
+  - type: web
+    name: lotus-osint
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: lotus serve --host 0.0.0.0 --port 10000
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: SHODAN_API_KEY
+        sync: false  # Set in Render dashboard
+      - key: VIRUSTOTAL_API_KEY
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+    autoDeploy: true
